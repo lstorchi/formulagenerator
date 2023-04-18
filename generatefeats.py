@@ -264,8 +264,8 @@ if __name__ == "__main__":
                 fp.close()
         
         
-        newatomicdata.to_pickle("newadata"+extra+".pkl")
-        newatomicdata.to_csv("newadata"+extra+".csv")
+        newatomicdata.to_pickle("newadata.pkl")
+        newatomicdata.to_csv("newadata.csv")
         
         #plt.figure(figsize=(12,10))
         #cor = newatomicdata.corr()
