@@ -8,7 +8,7 @@ from sklearn.linear_model import LinearRegression
 
 sys.path.append("./common/")
 
-import matinfmod 
+import generators
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
