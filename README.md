@@ -11,7 +11,7 @@ do
       
       for name in newadata.pkl finalformulalist.txt newadata.csv feature_mse.csv finalselectedformulas.txt
       do 
-         mv $name in $name"."$count
+         mv $name $name"."$count
       done
 
       count=$((count+1))
