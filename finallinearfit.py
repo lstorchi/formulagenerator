@@ -61,7 +61,7 @@ if __name__ == "__main__":
     y_pred = regressor.predict(x.reshape(-1,1))
 
     print('Coefficients: %15.8f Intecept: %15.8f\n', \
-          regressor.coef_[0], regressor.intercept_[0])
+          regressor.coef_, regressor.intercept_)
     
     plt.scatter(y_pred, y,  color='black')
     
