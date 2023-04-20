@@ -23,4 +23,4 @@ do
   done
 done
 
-
+python3 formulaptimizer.py --formula "<3 elements formula>" -f newadata.pkl.xx -i "./cleandataset.xlsx,Gexp,nonxtb"
