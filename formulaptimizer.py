@@ -11,14 +11,13 @@ sys.path.append("./common/")
 import generators
 
 if __name__ == "__main__":
-    
     labelname = "Name"
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-f","--file", help="input pki file ", \
             required=True, type=str)
     parser.add_argument("--formula", \
-            help="Specify the formula to check", \
+            help="Specify the formula to optimize", \
             required=True, default="")
     parser.add_argument("-i","--inputlabels", help="Specify label name and file comma separated string"+\
             "\n  \"filname.xlsx,labelcolumnname,sheetname\"", \
@@ -46,22 +45,20 @@ if __name__ == "__main__":
     data = pd.read_excel(excelfile, sheetname)
     y = data[labelname].values
 
-    labels = []
+    labels = None
     if labelname in data:
-        labels = data["Name"]
-    else:
-        for i in range(y.shape[0]):
-            labels.append(str(i))
-    
+        labels = data[labelname]
+
     print("Shape: ", y.shape, x.shape)
     
     regressor = LinearRegression()
     regressor.fit(x.reshape(-1,1), y)
     
     y_pred = regressor.predict(x.reshape(-1,1))
-
+    
     print('Coefficients: %15.8f Intecept: %15.8f\n', \
           regressor.coef_[0], regressor.intercept_[0])
+    
     
     plt.scatter(y_pred, y,  color='black')
     
@@ -87,3 +84,5 @@ if __name__ == "__main__":
     plt.ylabel("Real values " + labelname)
     
     plt.show()
+
+
