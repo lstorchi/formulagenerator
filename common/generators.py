@@ -10,7 +10,7 @@ import pandas as pd
 import numpy as np
 
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.linear_model import LinearRegression
 
 from concurrent import futures
@@ -748,6 +748,7 @@ def feature_check_fullsetrmse(feature_list_indexes, dataset_features, y_array):
     fd['percoeff'] = []
     fd['pval']     = []
     fd['mape']     = []
+    fd['r2']       = []
     
     dataset_keys = dataset_features.keys()[feature_list_indexes]
     for jj,keyv in enumerate(dataset_keys):
@@ -761,6 +762,8 @@ def feature_check_fullsetrmse(feature_list_indexes, dataset_features, y_array):
         regressor.fit((np.array(X)).reshape(-1,1), y_array)
         y_pred = regressor.predict((np.array(X)).reshape(-1,1))
 
+        r2val = r2_score(y_array, y_pred)
+
         mse = mean_squared_error(y_array, y_pred)
         rmse = math.sqrt(mse)
         mape = mean_absolute_percentage_error(y_array, y_pred)
@@ -771,6 +774,7 @@ def feature_check_fullsetrmse(feature_list_indexes, dataset_features, y_array):
         fd['index'].append(jj)
         fd['rmse'].append(rmse)
         fd['mape'].append(np.average(mape))
+        fd['r2'].append(r2val)
 
         if (math.isnan(val1)):
             fd['percoeff'].append(np.fabs(0.0))
@@ -795,10 +799,11 @@ def feature_check_lr(feature_list_indexes, dataset_features, y_array, \
 
     fd['formulas'] = []
     fd['index']    = []
-    fd['mse']     = []
+    fd['mse']      = []
     fd['percoeff'] = []
     fd['pval']     = []
     fd['mape']     = []
+    fd['r2']       = []
     
     dataset_keys = dataset_features.keys()[feature_list_indexes]
     for jj,keyv in enumerate(dataset_keys):
@@ -810,14 +815,16 @@ def feature_check_lr(feature_list_indexes, dataset_features, y_array, \
         
         mse = []
         mape = []
+        r2 = []
         for ii in range(numoflr):
             X_train, X_test, y_train, y_test = \
                     train_test_split(X, y_array, test_size=0.1, random_state=ii)
             regressor = LinearRegression()
             regressor.fit((np.array(X_train)).reshape(-1,1), y_train)
             y_pred = regressor.predict((np.array(X_test)).reshape(-1,1))
-            mse.append(mean_squared_error(y_test,y_pred))
 
+            r2.append(r2_score(y_test,y_pred))
+            mse.append(mean_squared_error(y_test,y_pred))
             mape.append(mean_absolute_percentage_error(y_test, y_pred))
 
         avg = float(np.average(mse))
@@ -834,6 +841,7 @@ def feature_check_lr(feature_list_indexes, dataset_features, y_array, \
             fd['percoeff'].append(np.fabs(val1))
 
         fd['pval'].append(val2)
+        fd['r2'].append(np.average(r2))
 
     feature_mse_dataframe = pd.DataFrame.from_dict(fd)
     fd2 = feature_mse_dataframe.copy()
