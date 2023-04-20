@@ -8,6 +8,7 @@ sys.path.append("./common/")
 import generators
 
 if __name__ == "__main__":
+    
     parser = argparse.ArgumentParser()
     parser.add_argument("-f","--file", help="input pki file ", \
             required=True, type=str)
@@ -128,6 +129,18 @@ if __name__ == "__main__":
 
     fp.write(bestformula_lr + "\n")
 
+    r2_max = np.max(feature_mse_dataframe['r2'].values)
+    bestformula_r2 = \
+            feature_mse_dataframe[feature_mse_dataframe['r2'] \
+            == r2_max]['formulas'].values[0]
+
+    print("")
+    print(" Max R2 value: ", r2_max)
+    print("   Related formula: ", bestformula_r2)
+
+    fp.write(bestformula_lr + "\n")
+
+    """
     pval_min = np.min(feature_mse_dataframe['pval'].values)
     bestformula_pval = \
             feature_mse_dataframe[feature_mse_dataframe['pval'] \
@@ -138,5 +151,6 @@ if __name__ == "__main__":
     print("   Related formula: ", bestformula_pval)
 
     fp.write(bestformula_pval + "\n")
+    """
 
     fp.close()

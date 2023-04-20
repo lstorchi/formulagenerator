@@ -12,7 +12,7 @@ import generators
 
 if __name__ == "__main__":
     
-    labelname = "Name"
+    name = "Name"
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-f","--file", help="input pki file ", \
@@ -47,8 +47,8 @@ if __name__ == "__main__":
     y = data[labelname].values
 
     labels = []
-    if labelname in data:
-        labels = data["Name"]
+    if name in data.columns:
+        labels = data[name]
     else:
         for i in range(y.shape[0]):
             labels.append(str(i))
