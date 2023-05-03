@@ -7,6 +7,8 @@ do
     for bf3 in HIEmligand HIEligandE logP
     do 
       echo "Counter: " $count
+      echo $bf1 $bf2 $bf3
+
       python3 ./generatefeats.py  -f cleandataset.xlsx -b "$bf1[1];$bf2[1];$bf3[1]" 
       python3 ffilter.py -u -f newadata.pkl -n 50 -i "./cleandataset.xlsx,Gexp,nonxtb"
       
@@ -21,4 +23,4 @@ do
   done
 done
 
-
+python3 formulaptimizer.py --formula "<3 elements formula>" -f newadata.pkl.xx -i "./cleandataset.xlsx,Gexp,nonxtb"

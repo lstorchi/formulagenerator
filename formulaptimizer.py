@@ -124,6 +124,8 @@ if __name__ == "__main__":
         a += 1.0/(np.float64(nstep))
 
     print("%10.5f "%(bestr2), bestformula)
+    print('Coefficients: %15.8f Intecept: %15.8f\n'%( \
+          best_regressor.coef_[0], best_regressor.intercept_))
 
     plt.scatter(best_y_pred, y,  color='black')
     
