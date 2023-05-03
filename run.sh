@@ -1,26 +1,57 @@
+# 3 one for each
+
+#export count=1
+#for bf1 in DEmFMO2 F2LE PIEmFMO2 FE2 PIEmFMO3 FE3
+#do
+#  for bf2  in mTDS numbtors
+#  do 
+#    for bf3 in HIEmligand HIEligandE logP
+#    do 
+#      echo "Counter: " $count
+#      echo $bf1 $bf2 $bf3
+#
+#      python3 ./generatefeats.py  -f cleandataset.xlsx -b "$bf1[1];$bf2[1];$bf3[1]" 
+#      python3 ffilter.py -u -f newadata.pkl -n 50 -i "./cleandataset.xlsx,Gexp,nonxtb"
+#      
+#      for name in newadata.pkl finalformulalist.txt newadata.csv feature_mse.csv finalselectedformulas.txt
+#      do 
+#         mv $name $name"."$count
+#      done
+#
+#      count=$((count+1))
+#
+#    done
+#  done
+#done
+
+
+# 3 elements alla possible
 
 export count=1
-for bf1 in DEmFMO2 F2LE PIEmFMO2 FE2 PIEmFMO3 FE3
+for bf1 in DEmFMO2 F2LE PIEmFMO2 FE2 PIEmFMO3 FE3 mTDS numbtors HIEmligand HIEligandE logP
 do
-  for bf2  in mTDS numbtors
+  for bf2  in DEmFMO2 F2LE PIEmFMO2 FE2 PIEmFMO3 FE3 mTDS numbtors HIEmligand HIEligandE logP
   do 
-    for bf3 in HIEmligand HIEligandE logP
-    do 
-      echo "Counter: " $count
-      echo $bf1 $bf2 $bf3
-
-      python3 ./generatefeats.py  -f cleandataset.xlsx -b "$bf1[1];$bf2[1];$bf3[1]" 
-      python3 ffilter.py -u -f newadata.pkl -n 50 -i "./cleandataset.xlsx,Gexp,nonxtb"
-      
-      for name in newadata.pkl finalformulalist.txt newadata.csv feature_mse.csv finalselectedformulas.txt
+    if [ "$bf1" != "$bf2" ]; then
+      for bf3 in DEmFMO2 F2LE PIEmFMO2 FE2 PIEmFMO3 FE3 mTDS numbtors HIEmligand HIEligandE logP
       do 
-         mv $name $name"."$count
+	if [ "$bf3" != "$bf1" ]; then
+	  if [ "$bf3" != "$bf2" ]; then
+            echo "Counter: " $count
+            echo $bf1 $bf2 $bf3
+           
+            python3 ./generatefeats.py  -f cleandataset.xlsx -b "$bf1[1];$bf2[1];$bf3[1]" 
+            python3 ffilter.py -u -f newadata.pkl -n 50 -i "./cleandataset.xlsx,Gexp,nonxtb"
+            
+            for name in newadata.pkl finalformulalist.txt newadata.csv feature_mse.csv finalselectedformulas.txt
+            do 
+               mv $name $name"."$count
+            done
+           
+            count=$((count+1))
+	  fi
+        fi
       done
-
-      count=$((count+1))
-
-    done
+    fi
   done
 done
-
-
