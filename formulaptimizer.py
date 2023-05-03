@@ -13,6 +13,7 @@ import generators
 
 if __name__ == "__main__":
     name = "Name"
+    tabtoread = "nonxtb"
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-f","--file", help="input pki file ", \
@@ -23,6 +24,9 @@ if __name__ == "__main__":
     parser.add_argument("-i","--inputlabels", help="Specify label name and file comma separated string"+\
             "\n  \"filname.xlsx,labelcolumnname,sheetname\"", \
             required=True, type=str, default="")
+    parser.add_argument("--fourelementsformula", \
+                        help="Generate formulas including four elements", action="store_true",
+                        required=False, default=False)
 
     args = parser.parse_args()
 
@@ -71,85 +75,160 @@ if __name__ == "__main__":
     
     num = formula.split("/")[0]
     denum = formula.split("/")[1]
-    firstnum = ""
-    secondnum = ""
-    operator = ""
 
-    if len(num.split("+")) == 2: 
-       operator = "+"
-       firstnum = num.split("+")[0][1:]
-       secondnum = num.split("+")[1][:-1]
-    elif len(num.split("-")) == 2: 
-       operator = "-"
-       firstnum = num.split("-")[0][1:]
-       secondnum = num.split("-")[1][:-1]
-       print(firstnum, secondnum, denum)
-    else:
-       print("Error in formula shape")
-       exit(1)
+    if args.fourelementsformula:
+        firstnum = ""
+        secondnum = ""
+        operator = ""
+
+        dfirstnum = ""
+        dsecondnum = ""
+        doperator = ""
+
+        if len(num.split("+")) == 2: 
+            operator = "+"
+            firstnum = num.split("+")[0][1:]
+            secondnum = num.split("+")[1][:-1]
+        elif len(num.split("-")) == 2: 
+            operator = "-"
+            firstnum = num.split("-")[0][1:]
+            secondnum = num.split("-")[1][:-1]
+        else:
+            print("Error in formula shape")
+            exit(1)
+
+        if len(denum.split("+")) == 2: 
+            doperator = "+"
+            dfirstnum = denum.split("+")[0][1:]
+            dsecondnum = denum.split("+")[1][:-1]
+        elif len(denum.split("-")) == 2: 
+            doperator = "-"
+            dfirstnum = denum.split("-")[0][1:]
+            dsecondnum = denum.split("-")[1][:-1]
+        else:
+            print("Error in formula shape")
+            exit(1)
  
-    print("Check Formula elements: |", \
-          firstnum, "|", secondnum, "|", denum, "|")
+        print("Check Formula elements: |", \
+            firstnum, "|", secondnum, "|", \
+            dfirstnum, "|", dsecondnum )
+        nstep = 10
 
-    nstep = 20
-    a = np.float64(np.float64(1.0)/(np.float64(nstep)))
-    for ai in range(0, nstep):
-        b =  np.float64(np.float64(1.0)/(np.float64(nstep)))
-        for bi in range(0, nstep):
-            c = np.float64(np.float64(1.0)/(np.float64(nstep)))
-            for ci in range(0, nstep):
-                newf = "("+str(a)+"*("+firstnum+"))"+ \
-                        operator+\
-                "("+str(b)+"*("+secondnum+"))" + "/" + \
-                "("+str(c)+"*("+denum+"))"
+        a = np.float64(np.float64(1.0)/(np.float64(nstep)))
+        for ai in range(0, nstep):
+            b =  np.float64(np.float64(1.0)/(np.float64(nstep)))
+            for bi in range(0, nstep):
+                c = np.float64(np.float64(1.0)/(np.float64(nstep)))
+                for ci in range(0, nstep):
+                    d = np.float64(np.float64(1.0)/(np.float64(nstep)))
+                    for di in range(0, nstep):
+                        newf = \
+                            "(("+str(a)+"*("+firstnum+"))"+ \
+                                operator+\
+                            " ("+str(b)+"*("+secondnum+")))" + "/" + \
+                            "("+str(c)+"*("+dfirstnum+"))"+ \
+                                doperator+\
+                             "("+str(d)+"*("+dsecondnum+"))"
 
-                newx = generators.get_new_feature(data, newf)
-                newx = np.asarray(newx)
-                regressor = LinearRegression()
-                regressor.fit(newx.reshape(-1, 1), y)
-                y_pred = regressor.predict(newx.reshape(-1,1))
+                        print(newf)
 
-                r2v = r2_score (y, y_pred)
+                        newx = generators.get_new_feature(data, newf)
+                        newx = np.asarray(newx)
+                        regressor = LinearRegression()
+                        regressor.fit(newx.reshape(-1, 1), y)
+                        y_pred = regressor.predict(newx.reshape(-1,1))
 
-                if (r2v > bestr2):
-                    bestr2 = r2v 
-                    bestformula = newf
-                    best_y_pred = y_pred
-                    best_regressor = regressor
+                        r2v = r2_score (y, y_pred)
 
-                #print("%10.5f "%(r2v), newf)
+                        if (r2v > bestr2):
+                            bestr2 = r2v 
+                            bestformula = newf
+                            best_y_pred = y_pred
+                            best_regressor = regressor
 
-                c += np.float64(np.float64(1.0)/(np.float64(nstep)))
-            b += 1.0/(np.float64(nstep))
-        a += 1.0/(np.float64(nstep))
+                        #print("%10.5f "%(r2v), newf)
+                        d += np.float64(np.float64(1.0)/(np.float64(nstep)))
+                    c += np.float64(np.float64(1.0)/(np.float64(nstep)))
+                b += 1.0/(np.float64(nstep))
+            a += 1.0/(np.float64(nstep))
+    else:
+        firstnum = ""
+        secondnum = ""
+        operator = ""
+
+        if len(num.split("+")) == 2: 
+            operator = "+"
+            firstnum = num.split("+")[0][1:]
+            secondnum = num.split("+")[1][:-1]
+        elif len(num.split("-")) == 2: 
+            operator = "-"
+            firstnum = num.split("-")[0][1:]
+            secondnum = num.split("-")[1][:-1]
+        else:
+            print("Error in formula shape")
+            exit(1)
+ 
+        print("Check Formula elements: |", \
+            firstnum, "|", secondnum, "|", denum, "|")
+
+        nstep = 10
+        a = np.float64(np.float64(1.0)/(np.float64(nstep)))
+        for ai in range(0, nstep):
+            b =  np.float64(np.float64(1.0)/(np.float64(nstep)))
+            for bi in range(0, nstep):
+                c = np.float64(np.float64(1.0)/(np.float64(nstep)))
+                for ci in range(0, nstep):
+                    newf = \
+                    "(("+str(a)+"*("+firstnum+"))"+ \
+                            operator+\
+                    " ("+str(b)+"*("+secondnum+")))" + "/" + \
+                    "("+str(c)+"*("+denum+"))"
+
+                    newx = generators.get_new_feature(data, newf)
+                    newx = np.asarray(newx)
+                    regressor = LinearRegression()
+                    regressor.fit(newx.reshape(-1, 1), y)
+                    y_pred = regressor.predict(newx.reshape(-1,1))
+
+                    r2v = r2_score (y, y_pred)
+
+                    if (r2v > bestr2):
+                        bestr2 = r2v 
+                        bestformula = newf
+                        best_y_pred = y_pred
+                        best_regressor = regressor
+
+                    #print("%10.5f "%(r2v), newf)
+
+                    c += np.float64(np.float64(1.0)/(np.float64(nstep)))
+                b += 1.0/(np.float64(nstep))
+            a += 1.0/(np.float64(nstep))
 
     print("%10.5f "%(bestr2), bestformula)
     print('Coefficients: %15.8f Intecept: %15.8f\n'%( \
-          best_regressor.coef_[0], best_regressor.intercept_))
+            best_regressor.coef_[0], best_regressor.intercept_))
 
     plt.scatter(best_y_pred, y,  color='black')
-    
+        
     i = 0
     for x,y in zip(best_y_pred,y):
         label = labels[i]
-    
+        
         plt.annotate(label, # this is the text
                      (x,y), # this is the point to label
                      textcoords="offset points", # how to position the text
                      xytext=(2,2), # distance from text to points (x,y)
                      ha='center') # horizontal alignment can be left, right or center
-    
+        
         i += 1
-    
+        
     #plt.xticks(())
     #plt.yticks(())
-    
+        
     plt.title(sheetname + " " + str(best_regressor.coef_) + \
-            " * " + bestformula + " + " + str(best_regressor.intercept_))
-    
+                " * " + bestformula + " + " + str(best_regressor.intercept_))
+        
     plt.xlabel("Predicted values " + labelname)
     plt.ylabel("Real values " + labelname)
-    
+        
     plt.show()
-
-
