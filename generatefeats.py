@@ -37,6 +37,8 @@ def get_top_abs_correlations(df, n=5):
     return au_corr[0:n]
 
 if __name__ == "__main__":
+    tabtoread = "nonxtb"
+
     parser = argparse.ArgumentParser()
     parser.add_argument("-f","--file", help="input xlsx file ", \
                         required=False, default="", type=str)
@@ -58,16 +60,20 @@ if __name__ == "__main__":
     parser.add_argument("-j", "--jumpremoving", \
                         help="Do not filter the features considering the correlation", action="store_true",
                         required=False, default=False)
+    parser.add_argument("-t", "--tabtouse", \
+                        help="Name of the tab to be used", type=str, required=False, \
+                        default=tabtoread)
     
     args = parser.parse_args()
     
     xslxfilename = args.file
     csvfilename = args.csvfile
+    tabtoread = args.tabtouse
 
     data = None
     if xslxfilename != "":
         xls = pd.ExcelFile(xslxfilename)
-        data = pd.read_excel(xls, "nonxtb", index_col=0)
+        data = pd.read_excel(xls, tabtoread, index_col=0)
     elif csvfilename != "":
         data = pd.read_csv(csvfilename, index_col=0)
         data = data.drop(columns=["Centre_of_mass_cordinates"])
