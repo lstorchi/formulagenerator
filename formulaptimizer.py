@@ -130,7 +130,7 @@ if __name__ == "__main__":
                                 doperator+\
                              " ("+str(d)+"*("+dsecondnum+")))"
 
-                        print(newf)
+                        #print(newf)
 
                         newx = generators.get_new_feature(data, newf)
                         newx = np.asarray(newx)
