@@ -91,7 +91,7 @@ if __name__ == "__main__":
     print("Check Formula elements: |", \
           firstnum, "|", secondnum, "|", denum, "|")
 
-    nstep = 10
+    nstep = 20
     a = np.float64(np.float64(1.0)/(np.float64(nstep)))
     for ai in range(0, nstep):
         b =  np.float64(np.float64(1.0)/(np.float64(nstep)))

@@ -114,6 +114,90 @@ def generate_formulas (features):
 
 ###############################################################################
 
+def get_twofeatures (n):
+
+    ns = n.split(" + ")
+    if len(ns) != 2:
+        ns = n.split(" - ")
+
+    fns = ns[0].replace ("**2", "")
+    fns = fns.replace ("**3", "")
+    fns = fns.replace ("sqrt(fabs(", "")
+    fns = fns.replace ("))", "")
+    fns = fns.replace ("exp(", "")
+    fns = fns.replace (")", "")
+
+    sns = ns[1].replace ("**2", "")
+    sns = sns.replace ("**3", "")
+    sns = sns.replace ("sqrt(fabs(", "")
+    sns = sns.replace ("))", "")
+    sns = sns.replace ("exp(", "")
+    sns = sns.replace (")", "")
+
+    return fns, sns
+
+###############################################################################
+
+def generate_formulas_four (features):
+
+    formulas  = []
+
+    numer = []
+    deno = []
+    for classe in features:
+
+        dim = len(features[classe])
+        
+        f1 = []
+        f2 = []
+        f3 = []
+        f4 = []
+        f5 = []
+        for i in range(dim):
+            
+            f1.append(features[classe][i] )
+            f2.append(features[classe][i] + "**2")
+            f3.append(features[classe][i] + "**3")
+            f4.append("sqrt(fabs("+features[classe][i] + "))")
+            f5.append("exp("+features[classe][i] + ")")
+        
+        ftuple = (f1, f2, f3, f4, f5)
+
+        for i in range(len(ftuple)):
+            first = ftuple[i]
+            for j in range(i, len(ftuple)):
+                second = ftuple[j]
+                for f in first:
+                    for s in second:
+                        if f != s:
+                            numer.append(f + " + " + s)
+                            numer.append(f + " - " + s)
+                            deno.append(f + " + " + s)
+                            deno.append(f + " - " + s)
+
+
+    for n in numer:
+        for d in deno:
+            if n != d:
+                bfset = set()
+                fn, sn = get_twofeatures (n)
+                fd, sd = get_twofeatures (d)
+                bfset.add(fn)
+                bfset.add(sn)
+                bfset.add(fd)
+                bfset.add(sd)
+
+                if len(bfset) == 4:
+                    #print(bfset)
+                    formulas.append("("+n+")/("+d+")")
+            
+    if len(formulas) != len(set(formulas)):
+        formulas = list(set(formulas)) 
+
+    return formulas
+
+###############################################################################
+
 def generate_formulas_AB (features, atomicdata, lista, listb, method = 1):
 
     formulas = []

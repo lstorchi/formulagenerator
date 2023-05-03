@@ -57,6 +57,9 @@ if __name__ == "__main__":
     parser.add_argument("-r", "--reducemem", \
                         help="use less memory for correlation", action="store_true",
                         required=False, default=False)
+    parser.add_argument("--fourelementsformula", \
+                        help="Generate formulas including four elements", action="store_true",
+                        required=False, default=False)
     parser.add_argument("-j", "--jumpremoving", \
                         help="Do not filter the features considering the correlation", action="store_true",
                         required=False, default=False)
@@ -154,7 +157,11 @@ if __name__ == "__main__":
     
     try:
         print("Start generating formulas...")
-        formulas = generators.generate_formulas (basicfeaturesdict)
+        formulas = None
+        if args.fourelementsformula:
+            formulas = generators.generate_formulas_four (basicfeaturesdict)
+        else:
+            formulas = generators.generate_formulas (basicfeaturesdict)
         fname  = "formulaslist.txt"
         if os.path.exists(fname):
             os.remove(fname)
