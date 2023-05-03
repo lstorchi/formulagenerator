@@ -92,7 +92,7 @@ do
       echo $bf1 $bf2 $bf3 $bf4
 
       python3 ./generatefeats.py -f cleandataset.xlsx --fourelementsformula -b "$bf1[1];$bf2[1];$bf3[1];$bf4[1]" 
-      python3 ffilter.py -u -f newadata.pkl -i "./cleandataset.xlsx,Gexp,xtb
+      python3 ffilter.py -u -f newadata.pkl -i "./cleandataset.xlsx,Gexp,xtb"
 
       for name in newadata.pkl finalformulalist.txt newadata.csv feature_mse.csv finalselectedformulas.txt
       do 
