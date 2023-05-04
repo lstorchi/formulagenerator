@@ -208,6 +208,9 @@ if __name__ == "__main__":
     print('Coefficients: %15.8f Intercept: %15.8f\n'%( \
             best_regressor.coef_[0], best_regressor.intercept_))
 
+    for i, yv in enumerate(y):
+        print("%10.5f , %10.5f"%(yv, best_y_pred[i]))
+        
     plt.scatter(best_y_pred, y,  color='black')
         
     i = 0
