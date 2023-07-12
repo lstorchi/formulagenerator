@@ -38,6 +38,7 @@ def get_top_abs_correlations(df, n=5):
 
 if __name__ == "__main__":
     tabtoread = "nonxtb"
+    quiet = True
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-f","--file", help="input xlsx file ", \
@@ -79,10 +80,9 @@ if __name__ == "__main__":
         data = pd.read_excel(xls, tabtoread, index_col=0)
     elif csvfilename != "":
         data = pd.read_csv(csvfilename, index_col=0)
-        data = data.drop(columns=["Centre_of_mass_cordinates"])
 
     if data is None:
-        print("Input gilename not specified")
+        print("Input filename not specified")
         exit(1)
     
     basicfeatureslist = args.basicfeatures.split(";")
@@ -119,13 +119,15 @@ if __name__ == "__main__":
             basicfeaturesdict[classe].append(name)
 
     atleastone = False
-    print("Top Absolute Correlations")
+    if not quiet: 
+        print("Top Absolute Correlations")
     topcorr = get_top_abs_correlations(data, 10)
     for key, value in topcorr.items():
        #print("%30s %30s %10.6f"%(key[0], key[1], value))
        if (value > corrlimit):
           if (key[0] in featureslist) or (key[1] in featureslist):
-            print("High correlationd found ", key[0] ," and ", key[1])
+            if not quiet: 
+                print("High correlationd found ", key[0] ," and ", key[1])
 
     #corrmat = data.corr()
     #ax = sns.heatmap(corrmat, annot = True, vmin=-1, vmax=1, center= 0)
@@ -156,7 +158,8 @@ if __name__ == "__main__":
             basicfeaturesdict[classe].append(name)
     
     try:
-        print("Start generating formulas...")
+        if not quiet: 
+            print("Start generating formulas...")
         formulas = None
         if args.fourelementsformula:
             formulas = generators.generate_formulas_four (basicfeaturesdict)
@@ -169,9 +172,10 @@ if __name__ == "__main__":
         for f in formulas:
             fp.write(f + "\n")
         fp.close()
-        print("Generated ", len(formulas) ," formulas...")
-
-        print ("Start generating features...")
+        if not quiet: 
+            print("Generated ", len(formulas) ," formulas...")
+        if not quiet: 
+            print ("Start generating features...")
         last = args.dumponly
 
         max = last  
@@ -181,12 +185,13 @@ if __name__ == "__main__":
         newdataframe = {}
         
         for idx, formula in enumerate(formulas[0:last]):
-            if not args.verbose:
-                generators.progress_bar(idx+1, max)
-                #print(formula)
-            else:
+
+            if args.verbose:
                 print ("%10d of %10d"%(idx+1, max))
                 sys.stdout.flush()
+            else:
+                if not quiet:
+                    generators.progress_bar(idx+1, max)
             
             newf = None
 
@@ -203,22 +208,26 @@ if __name__ == "__main__":
         if not args.verbose:
             print()
             
-        newatomicdata = pd.DataFrame.from_dict(newdataframe)      
-        print ("Produced ", newatomicdata.size , " data features")
+        newatomicdata = pd.DataFrame.from_dict(newdataframe)   
+        if not quiet:   
+            print ("Produced ", newatomicdata.size , " data features")
         corrlimit = 0.98
 
         if not args.jumpremoving:
-            print ("Start removing highly correlated features (limit: %10.5f)"%corrlimit)
+            if not quiet: 
+                print ("Start removing highly correlated features (limit: %10.5f)"%corrlimit)
             if args.reducemem:
                 cname = list(newatomicdata.columns)
                 
                 to_drop = []
                 for i in range(len(cname)):
                     if not args.verbose:
-                        generators.progress_bar(i+1, len(cname))
+                        if not quiet: 
+                            generators.progress_bar(i+1, len(cname))
                     else:
-                        print("%10d of %1dd"%(i+1, len(cname)))
-                        sys.stdout.flush()
+                        if not quiet: 
+                            print("%10d of %1dd"%(i+1, len(cname)))
+                            sys.stdout.flush()
                     f1 = cname[i]
                     for j in range(i+1,len(cname)):
                         f2 = cname[j]
@@ -232,32 +241,38 @@ if __name__ == "__main__":
                                 break
             
                 if not args.verbose:
-                    print("")
-                print("  Removing ", len(to_drop), " features")
+                    if not quiet: 
+                        print("")
+                if not quiet: 
+                    print("  Removing ", len(to_drop), " features")
                 
                 if args.verbose:
                     for f in to_drop:
-                        print("    ", f)
+                        if not quiet: 
+                            print("    ", f)
                 
                 newatomicdata = newatomicdata.drop(newatomicdata[to_drop], axis=1)
-                print ("Produced ", newatomicdata.size , " data features")
+                if not quiet: 
+                    print ("Produced ", newatomicdata.size , " data features")
             else:
                 corr = newatomicdata.corr(method = 'pearson').abs()
                             
                 # Select upper triangle of correlation matrix
                 upper = corr.where(np.triu(\
-                    np.ones(corr.shape), k=1).astype(np.bool))
+                    np.ones(corr.shape), k=1).astype(bool))
                 to_drop = [column for column in \
                     upper.columns if any(upper[column] > corrlimit)]
-            
-                print("  Removing ", len(to_drop), " features")
+                if not quiet: 
+                    print("  Removing ", len(to_drop), " features")
             
                 if args.verbose:
                     for f in to_drop:
-                        print("    ", f)
+                        if not quiet: 
+                            print("    ", f)
             
                 newatomicdata = newatomicdata.drop(newatomicdata[to_drop], axis=1)
-                print ("Produced ", newatomicdata.size , " data features")
+                if not quiet: 
+                    print ("Produced ", newatomicdata.size , " data features")
         
                 #if (args.verbose):
                 #    corr = newatomicdata.corr(method = 'pearson').abs()

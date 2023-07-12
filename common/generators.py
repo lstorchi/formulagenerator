@@ -822,7 +822,8 @@ def get_new_feature (indatframe, formula):
 
 ###############################################################################
 
-def feature_check_fullsetrmse(feature_list_indexes, dataset_features, y_array):
+def feature_check_fullsetrmse(feature_list_indexes, dataset_features, y_array,
+                            quiet=True):
 
     fd = dict()
 
@@ -852,7 +853,8 @@ def feature_check_fullsetrmse(feature_list_indexes, dataset_features, y_array):
         rmse = math.sqrt(mse)
         mape = mean_absolute_percentage_error(y_array, y_pred)
 
-        progress_bar(jj + 1, len(dataset_keys))
+        if not quiet:
+            progress_bar(jj + 1, len(dataset_keys))
 
         fd['formulas'].append(keyv)
         fd['index'].append(jj)

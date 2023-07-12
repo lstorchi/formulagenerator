@@ -8,6 +8,8 @@ sys.path.append("./common/")
 import generators
 
 if __name__ == "__main__":
+
+    quiet = True
     
     parser = argparse.ArgumentParser()
     parser.add_argument("-f","--file", help="input pki file ", \
@@ -32,7 +34,8 @@ if __name__ == "__main__":
     N = df.shape[0]
 
     DE_Array = None
-    print(args.inputlabels)
+    if not quiet:
+        print(args.inputlabels)
     if args.inputlabels == "":
         splitted = generators.defaultdevalues.split(",")
         DE_array = np.array(np.float64(splitted)).reshape(N, 1)
@@ -67,15 +70,17 @@ if __name__ == "__main__":
                 print("Error value ", int(value), " not present")
                 exit(1)
  
-            print("All possible value are:")
-            for v in uniqvalues:
-                print("  ",v)
+            if not quiet:
+                print("All possible value are:")
+                for v in uniqvalues:
+                    print("  ",v)
  
             isthevalue =  data[key] == int(value)
             data = data[isthevalue]
 
-            print("Selected data: ")
-            print(data.shape)
+            if not quiet:
+                print("Selected data: ")
+                print(data.shape)
  
         label = data[sline[1]]
         DE_array = label.values
@@ -83,7 +88,8 @@ if __name__ == "__main__":
     fname = "finalselectedformulas.txt"
     fp = open(fname, "w")
 
-    print("I will process :", len(df.columns), " features " )
+    if not quiet:
+        print("I will process :", len(df.columns), " features " )
 
     feature_mse_dataframe = None
 
@@ -97,8 +103,7 @@ if __name__ == "__main__":
             feature_mse_dataframe[feature_mse_dataframe['rmse'] \
             == minvalue_lr]['formulas'].values[0]
 
-        print(" Min RMSE value: ", minvalue_lr)
-        print("   Related formula: ", bestformula_lr)
+        print(" Min RMSE value: ", minvalue_lr, " Related formula: ", bestformula_lr)
 
         fp.write(bestformula_lr + "\n")
     else:
@@ -111,8 +116,7 @@ if __name__ == "__main__":
             feature_mse_dataframe[feature_mse_dataframe['mse'] \
             == minvalue_lr]['formulas'].values[0]
 
-        print(" Min LR value: ", minvalue_lr)
-        print("   Related formula: ", bestformula_lr)
+        print(" Min LR value: ", minvalue_lr, "   Related formula: ", bestformula_lr)
 
         fp.write(bestformula_lr + "\n")
 
@@ -123,9 +127,7 @@ if __name__ == "__main__":
             feature_mse_dataframe[feature_mse_dataframe['percoeff'] \
             == pearson_max]['formulas'].values[0]
 
-    print("")
-    print(" Max Pearson R value: ", pearson_max)
-    print("   Related formula: ", bestformula_pearson)
+    print(" Max Pearson R value: ", pearson_max, "   Related formula: ", bestformula_pearson)
 
     fp.write(bestformula_lr + "\n")
 
@@ -134,9 +136,7 @@ if __name__ == "__main__":
             feature_mse_dataframe[feature_mse_dataframe['r2'] \
             == r2_max]['formulas'].values[0]
 
-    print("")
-    print(" Max R2 value: ", r2_max)
-    print("   Related formula: ", bestformula_r2)
+    print(" Max R2 value: ", r2_max, "   Related formula: ", bestformula_r2)
 
     fp.write(bestformula_lr + "\n")
 
