@@ -206,7 +206,8 @@ if __name__ == "__main__":
                 newdataframe[formula] = newf
         
         if not args.verbose:
-            print()
+            if not quiet: 
+                print()
             
         newatomicdata = pd.DataFrame.from_dict(newdataframe)   
         if not quiet:   

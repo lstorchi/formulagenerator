@@ -36,6 +36,7 @@ if __name__ == "__main__":
     DE_Array = None
     if not quiet:
         print(args.inputlabels)
+        
     if args.inputlabels == "":
         splitted = generators.defaultdevalues.split(",")
         DE_array = np.array(np.float64(splitted)).reshape(N, 1)
@@ -103,7 +104,7 @@ if __name__ == "__main__":
             feature_mse_dataframe[feature_mse_dataframe['rmse'] \
             == minvalue_lr]['formulas'].values[0]
 
-        print(" Min RMSE value: ", minvalue_lr, " Related formula: ", bestformula_lr)
+        print(" Min RMSE value , ", minvalue_lr, " , Related formula , ", bestformula_lr)
 
         fp.write(bestformula_lr + "\n")
     else:
@@ -116,7 +117,7 @@ if __name__ == "__main__":
             feature_mse_dataframe[feature_mse_dataframe['mse'] \
             == minvalue_lr]['formulas'].values[0]
 
-        print(" Min LR value: ", minvalue_lr, "   Related formula: ", bestformula_lr)
+        print(" Min LR value , ", minvalue_lr, " ,  Related formula , ", bestformula_lr)
 
         fp.write(bestformula_lr + "\n")
 
@@ -127,7 +128,7 @@ if __name__ == "__main__":
             feature_mse_dataframe[feature_mse_dataframe['percoeff'] \
             == pearson_max]['formulas'].values[0]
 
-    print(" Max Pearson R value: ", pearson_max, "   Related formula: ", bestformula_pearson)
+    print(" Max Pearson R value , ", pearson_max, " ,  Related formula , ", bestformula_pearson)
 
     fp.write(bestformula_lr + "\n")
 
@@ -136,7 +137,7 @@ if __name__ == "__main__":
             feature_mse_dataframe[feature_mse_dataframe['r2'] \
             == r2_max]['formulas'].values[0]
 
-    print(" Max R2 value: ", r2_max, "   Related formula: ", bestformula_r2)
+    print(" Max R2 value , ", r2_max, " ,  Related formula , ", bestformula_r2)
 
     fp.write(bestformula_lr + "\n")
 
