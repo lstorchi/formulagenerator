@@ -77,9 +77,9 @@ def generate_formulas (features):
         for i in range(dim):
             
             f1.append(features[classe][i] )
-            f2.append(features[classe][i] + "**2")
-            f3.append(features[classe][i] + "**3")
-            f4.append("sqrt(fabs("+features[classe][i] + "))")
+            f2.append(features[classe][i] + "**3")
+            f3.append(features[classe][i] + "**5")
+            #f4.append("sqrt(fabs("+features[classe][i] + "))")
             f5.append("exp("+features[classe][i] + ")")
         
         ftuple = (f1, f2, f3, f4, f5)
@@ -98,10 +98,10 @@ def generate_formulas (features):
     for classe in features:
         dim = len(features[classe])
         for i in range(dim):
-            deno.append("sqrt(fabs("+features[classe][i]+"))")
+            #deno.append("sqrt(fabs("+features[classe][i]+"))")
             deno.append("exp("+features[classe][i]+")")
-            deno.append("("+features[classe][i]+"**2)")
             deno.append("("+features[classe][i]+"**3)")
+            deno.append("("+features[classe][i]+"**5)")
 
     for n in numer:
         for d in deno:
@@ -156,9 +156,9 @@ def generate_formulas_four (features):
         for i in range(dim):
             
             f1.append(features[classe][i] )
-            f2.append(features[classe][i] + "**2")
-            f3.append(features[classe][i] + "**3")
-            f4.append("sqrt(fabs("+features[classe][i] + "))")
+            f2.append(features[classe][i] + "**3")
+            f3.append(features[classe][i] + "**5")
+            #f4.append("sqrt(fabs("+features[classe][i] + "))")
             f5.append("exp("+features[classe][i] + ")")
         
         ftuple = (f1, f2, f3, f4, f5)
