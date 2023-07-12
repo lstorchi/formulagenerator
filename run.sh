@@ -163,8 +163,7 @@ do
   do 
     for bf3 in HIEmligand HIEligandE logP
     do 
-      echo "FR4 Counter: " $count
-      echo $bf1 $bf2 $bf3
+      echo "FR4 Counter: " $count $bf1 $bf2 $bf3 $bf4
 
       python3 ./generatefeats.py --fourelementsformula -f cleandataset.xlsx \
         -b "$bf1[1];$bf2[1];$bf3[1];$bf4[1]" 
