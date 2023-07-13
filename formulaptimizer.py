@@ -118,8 +118,8 @@ if __name__ == "__main__":
             print("Check Formula elements: |", \
                 firstnum, "|", secondnum, "|", \
                 dfirstnum, "|", dsecondnum )
-        nstep = 10
 
+        nstep = 10
         a = np.float64(np.float64(1.0)/(np.float64(nstep)))
         for ai in range(0, nstep):
             b =  np.float64(np.float64(1.0)/(np.float64(nstep)))
