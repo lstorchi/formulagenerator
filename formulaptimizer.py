@@ -216,7 +216,7 @@ if __name__ == "__main__":
         print('Coefficients: %15.8f Intercept: %15.8f\n'%( \
             best_regressor.coef_[0], best_regressor.intercept_))
     else:
-         print("%10.5f "%(bestr2), " , " best_regressor.intercept_, " + (",  \
+         print("%10.5f "%(bestr2), " , ", best_regressor.intercept_, " + (",  \
                best_regressor.coef_[0], " ) * (" , \
                bestformula, " )")
    
