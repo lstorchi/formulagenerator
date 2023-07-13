@@ -11,7 +11,7 @@ do
 
       python3 ./generatefeats.py  -f cleandataset.xlsx \
         -b "$bf1[1];$bf2[1];$bf3[1]" >> runall.out  
-      python3 ffilter.py -t $count -u -f newadata.pkl -n 50 \
+      python3 ffilter.py -t  "$count, 3" -u -f newadata.pkl -n 50 \
         -i "./cleandataset.xlsx,Gexp,nonxtb" >> runall.out  
       
       for name in newadata.pkl finalformulalist.txt newadata.csv feature_mse.csv finalselectedformulas.txt
@@ -37,7 +37,7 @@ do
 
       python3 ./generatefeats.py --fourelementsformula -f cleandataset.xlsx \
         -b "$bf1[1];$bf2[1];$bf3[1];$bf4[1]"  >> runall.out   
-      python3 ffilter.py -t $count -u -f newadata.pkl -n 50 \
+      python3 ffilter.py -t "$count, 4" -u -f newadata.pkl -n 50 \
         -i "./cleandataset.xlsx,Gexp,nonxtb" >> runall.out  
       
       for name in newadata.pkl finalformulalist.txt newadata.csv feature_mse.csv finalselectedformulas.txt
@@ -62,7 +62,7 @@ do
 
       python3 ./generatefeats.py --fourelementsformula -f cleandataset.xlsx \
         -b "$bf1[1];$bf2[1];$bf3[1];$bf4[1]"  >> runall.out   
-      python3 ffilter.py -t $count -u -f newadata.pkl -n 50 \
+      python3 ffilter.py -t "$count, 4" -u -f newadata.pkl -n 50 \
         -i "./cleandataset.xlsx,Gexp,nonxtb" >> runall.out   
       
       for name in newadata.pkl finalformulalist.txt newadata.csv feature_mse.csv finalselectedformulas.txt
