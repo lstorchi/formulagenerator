@@ -26,7 +26,6 @@ do
 done
 
 export bf4="logP"
-export count=1
 for bf1 in DEmFMO2 F2LE PIEmFMO2 FE2
 do
   for bf2  in  mTDS numbtors
