@@ -77,3 +77,4 @@ done
 
 grep "Max R2 value" runall.out  > allformula.csv 
 
+python3 allformulaoptimizer.py allformula.csv
