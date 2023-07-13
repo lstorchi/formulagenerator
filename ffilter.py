@@ -25,6 +25,8 @@ if __name__ == "__main__":
             help="Split by a key [default=\"\"]", required=False, default="")
     parser.add_argument("-u", "--usefullsetrmse", \
             help="Sort using the fullset RMSE instead of the random splitting", action="store_true", default=False)
+    parser.add_argument("-t", "--tags", \
+            help="Specify a tag to add ", required=False, type=str, default="")
     
     args = parser.parse_args()
     
@@ -104,7 +106,7 @@ if __name__ == "__main__":
             feature_mse_dataframe[feature_mse_dataframe['rmse'] \
             == minvalue_lr]['formulas'].values[0]
 
-        print(" Min RMSE value , ", minvalue_lr, " , Related formula , ", bestformula_lr)
+        print(args.tags, ", Min RMSE value , ", minvalue_lr, " , Related formula , ", bestformula_lr)
 
         fp.write(bestformula_lr + "\n")
     else:
@@ -117,7 +119,7 @@ if __name__ == "__main__":
             feature_mse_dataframe[feature_mse_dataframe['mse'] \
             == minvalue_lr]['formulas'].values[0]
 
-        print(" Min LR value , ", minvalue_lr, " ,  Related formula , ", bestformula_lr)
+        print(args.tags, ", Min LR value , ", minvalue_lr, " ,  Related formula , ", bestformula_lr)
 
         fp.write(bestformula_lr + "\n")
 
@@ -128,7 +130,7 @@ if __name__ == "__main__":
             feature_mse_dataframe[feature_mse_dataframe['percoeff'] \
             == pearson_max]['formulas'].values[0]
 
-    print(" Max Pearson R value , ", pearson_max, " ,  Related formula , ", bestformula_pearson)
+    print(args.tags,", Max Pearson R value , ", pearson_max, " ,  Related formula , ", bestformula_pearson)
 
     fp.write(bestformula_lr + "\n")
 
@@ -137,7 +139,7 @@ if __name__ == "__main__":
             feature_mse_dataframe[feature_mse_dataframe['r2'] \
             == r2_max]['formulas'].values[0]
 
-    print(" Max R2 value , ", r2_max, " ,  Related formula , ", bestformula_r2)
+    print(args.tags,", Max R2 value , ", r2_max, " ,  Related formula , ", bestformula_r2)
 
     fp.write(bestformula_lr + "\n")
 
