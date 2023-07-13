@@ -17,8 +17,15 @@ if __name__ == "__main__":
         formula = formula.lstrip()
         formula = formula.rstrip()
 
-        toexec = "python3 ./formulaptimizer.py --formula " + "\""+formula+"\" -f" \
-            "newadata.pkl."+num+" -i " +  "\"./cleandataset.xlsx,Gexp,nonxtb\""
+        numofelements = int(sline[1])
+
+        toexe = ""
+        if numofelements == 3:
+            toexec = "python3 ./formulaptimizer.py --formula " + "\""+formula+"\" -f" \
+                "newadata.pkl."+num+" -i " +  "\"./cleandataset.xlsx,Gexp,nonxtb\""
+        elif numofelements == 4:
+            toexec = "python3 ./formulaptimizer.py -fourelementsformula -formula " + "\""+formula+"\" -f" \
+                "newadata.pkl."+num+" -i " +  "\"./cleandataset.xlsx,Gexp,nonxtb\""
         
         os.system(toexec)
 
