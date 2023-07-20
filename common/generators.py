@@ -84,7 +84,7 @@ def generate_formulas (features, positivefeatureslist =  [""]):
             f4.append("exp("+features[classe][i] + ")")
 
             if (features[classe][i] in positivefeatureslist):
-                f5.append("sqrt(abs("+features[classe][i] + "))")
+                f5.append("sqrt(fabs("+features[classe][i] + "))")
                 f6.append(features[classe][i] + "**2")
                 f7.append(features[classe][i] + "**4")
 
@@ -173,7 +173,7 @@ def generate_formulas_four (features, positivefeatureslist = [""]):
             f4.append("exp("+features[classe][i] + ")")
 
             if (features[classe][i] in positivefeatureslist):
-                f5.append("sqrt(abs("+features[classe][i] + "))")
+                f5.append("sqrt(fabs("+features[classe][i] + "))")
                 f6.append(features[classe][i] + "**2")
                 f7.append(features[classe][i] + "**4")
 
