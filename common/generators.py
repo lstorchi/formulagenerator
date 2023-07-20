@@ -60,7 +60,7 @@ def progress_bar (count, total, status=''):
 
 ###############################################################################
 
-def generate_formulas (features):
+def generate_formulas (features, positivefeatureslist =  [""]):
 
     formulas  = []
 
@@ -74,15 +74,25 @@ def generate_formulas (features):
         f3 = []
         f4 = []
         f5 = []
+        f6 = []
+        f7 = []
         for i in range(dim):
             
             f1.append(features[classe][i] )
             f2.append(features[classe][i] + "**3")
             f3.append(features[classe][i] + "**5")
-            #f4.append("sqrt(fabs("+features[classe][i] + "))")
-            f5.append("exp("+features[classe][i] + ")")
-        
-        ftuple = (f1, f2, f3, f4, f5)
+            f4.append("exp("+features[classe][i] + ")")
+
+            if (features[classe][i] in positivefeatureslist):
+                f5.append(features[classe][i] + "))")
+                f6.append(features[classe][i] + "**2")
+                f7.append(features[classe][i] + "**4")
+
+        ftuple = ()
+        if (len(f5) > 0) and (len(f6) > 0) and (len(f7) > 0):
+            ftuple = (f1, f2, f3, f4, f5, f6, f7)
+        else:
+            ftuple = (f1, f2, f3, f4)
 
         for i in range(len(ftuple)):
             first = ftuple[i]
@@ -138,7 +148,7 @@ def get_twofeatures (n):
 
 ###############################################################################
 
-def generate_formulas_four (features):
+def generate_formulas_four (features, positivefeatureslist = [""]):
 
     formulas  = []
 
@@ -153,15 +163,25 @@ def generate_formulas_four (features):
         f3 = []
         f4 = []
         f5 = []
+        f6 = []
+        f7 = []
         for i in range(dim):
             
             f1.append(features[classe][i] )
             f2.append(features[classe][i] + "**3")
             f3.append(features[classe][i] + "**5")
-            #f4.append("sqrt(fabs("+features[classe][i] + "))")
-            f5.append("exp("+features[classe][i] + ")")
-        
-        ftuple = (f1, f2, f3, f4, f5)
+            f4.append("exp("+features[classe][i] + ")")
+
+            if (features[classe][i] in positivefeatureslist):
+                f5.append(features[classe][i] + "))")
+                f6.append(features[classe][i] + "**2")
+                f7.append(features[classe][i] + "**4")
+
+        ftuple = ()
+        if (len(f5) > 0) and (len(f6) > 0) and (len(f7) > 0):
+            ftuple = (f1, f2, f3, f4, f5, f6, f7)
+        else:
+            ftuple = (f1, f2, f3, f4)
 
         for i in range(len(ftuple)):
             first = ftuple[i]

@@ -67,7 +67,9 @@ if __name__ == "__main__":
     parser.add_argument("-t", "--tabtouse", \
                         help="Name of the tab to be used", type=str, required=False, \
                         default=tabtoread)
-    
+    parser.add_argument("--positivefeatureslist", \
+                        help="Comma separated features list that can be used for **2 **4 and sqrt", type=str, required=False, \
+                        default="")
     args = parser.parse_args()
     
     xslxfilename = args.file
@@ -161,10 +163,14 @@ if __name__ == "__main__":
         if not quiet: 
             print("Start generating formulas...")
         formulas = None
+        positivefeatureslist = args.positivefeatureslist.split(",")
+
         if args.fourelementsformula:
-            formulas = generators.generate_formulas_four (basicfeaturesdict)
+            formulas = generators.generate_formulas_four (basicfeaturesdict, \
+                                                          positivefeatureslist)
         else:
-            formulas = generators.generate_formulas (basicfeaturesdict)
+            formulas = generators.generate_formulas (basicfeaturesdict, \
+                                                     positivefeatureslist)
         fname  = "formulaslist.txt"
         if os.path.exists(fname):
             os.remove(fname)

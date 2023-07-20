@@ -10,7 +10,7 @@ do
       echo "FR3 Counter: " $count $bf1 $bf2 $bf3 >> runall.out  
 
       python3 ./generatefeats.py  -f cleandataset.xlsx \
-        -b "$bf1[1];$bf2[1];$bf3[1]" >> runall.out  
+        -b "$bf1[1];$bf2[1];$bf3[1]" --positivefeatureslist "numbtors,mTDS,dEpligand" >> runall.out  
       python3 ffilter.py -t  "$count, 3" -u -f newadata.pkl -n 50 \
         -i "./cleandataset.xlsx,Gexp,nonxtb" >> runall.out  
       
@@ -35,7 +35,7 @@ do
       echo "FR4 Counter: " $count $bf1 $bf2 $bf3 $bf4 >> runall.out  
 
       python3 ./generatefeats.py --fourelementsformula -f cleandataset.xlsx \
-        -b "$bf1[1];$bf2[1];$bf3[1];$bf4[1]"  >> runall.out   
+        -b "$bf1[1];$bf2[1];$bf3[1];$bf4[1]" --positivefeatureslist "numbtors,mTDS,dEpligand" >> runall.out   
       python3 ffilter.py -t "$count, 4" -u -f newadata.pkl -n 50 \
         -i "./cleandataset.xlsx,Gexp,nonxtb" >> runall.out  
       
@@ -60,7 +60,7 @@ do
       echo "FR4 Counter: " $count $bf1 $bf2 $bf3 $bf4 >> runall.out  
 
       python3 ./generatefeats.py --fourelementsformula -f cleandataset.xlsx \
-        -b "$bf1[1];$bf2[1];$bf3[1];$bf4[1]"  >> runall.out   
+        -b "$bf1[1];$bf2[1];$bf3[1];$bf4[1]"  --positivefeatureslist "numbtors,mTDS,dEpligand" >> runall.out   
       python3 ffilter.py -t "$count, 4" -u -f newadata.pkl -n 50 \
         -i "./cleandataset.xlsx,Gexp,nonxtb" >> runall.out   
       
