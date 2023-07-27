@@ -103,6 +103,7 @@ def generate_formulas (features, positivefeatureslist =  [""]):
                         if f != s:
                             numer.append(f + " + " + s)
                             numer.append(f + " - " + s)
+                            numer.append(f + " * " + s)
 
     deno = []
     for classe in features:
@@ -112,6 +113,10 @@ def generate_formulas (features, positivefeatureslist =  [""]):
             deno.append("exp("+features[classe][i]+")")
             deno.append("("+features[classe][i]+"**3)")
             deno.append("("+features[classe][i]+"**5)")
+            if (features[classe][i] in positivefeatureslist):
+                deno.append("sqrt(fabs("+features[classe][i] + "))")
+                deno.append(features[classe][i] + "**2")
+                deno.append(features[classe][i] + "**4")
 
     for n in numer:
         for d in deno:
@@ -192,8 +197,10 @@ def generate_formulas_four (features, positivefeatureslist = [""]):
                         if f != s:
                             numer.append(f + " + " + s)
                             numer.append(f + " - " + s)
+                            numer.append(f + " * " + s)
                             deno.append(f + " + " + s)
                             deno.append(f + " - " + s)
+                            deno.append(f + " * " + s)
 
 
     for n in numer:
