@@ -212,17 +212,19 @@ def generate_formulas_four (features, positivefeatureslist = [""]):
     for n in numer:
         for d in deno:
             if n != d:
-                bfset = set()
-                fn, sn = get_twofeatures (n)
-                fd, sd = get_twofeatures (d)
-                bfset.add(fn)
-                bfset.add(sn)
-                bfset.add(fd)
-                bfset.add(sd)
+                formulas.append("("+n+")/("+d+")")
 
-                if len(bfset) == 4:
-                    #print(bfset)
-                    formulas.append("("+n+")/("+d+")")
+                #bfset = set()
+                #fn, sn = get_twofeatures (n)
+                #fd, sd = get_twofeatures (d)
+                #bfset.add(fn)
+                #bfset.add(sn)
+                #bfset.add(fd)
+                #bfset.add(sd)
+
+                #if len(bfset) == 4:
+                #    #print(bfset)
+                #    formulas.append("("+n+")/("+d+")")
             
     if len(formulas) != len(set(formulas)):
         formulas = list(set(formulas)) 
