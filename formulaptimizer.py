@@ -90,26 +90,34 @@ if __name__ == "__main__":
         dsecondnum = ""
         doperator = ""
 
-        if len(num.split("+")) == 2: 
+        if len(num.split(" + ")) == 2: 
             operator = "+"
             firstnum = num.split("+")[0][1:]
             secondnum = num.split("+")[1][:-1]
-        elif len(num.split("-")) == 2: 
+        elif len(num.split(" - ")) == 2: 
             operator = "-"
             firstnum = num.split("-")[0][1:]
             secondnum = num.split("-")[1][:-1]
+        elif len(num.split(" * ")) == 2: 
+            operator = "*"
+            firstnum = num.split(" * ")[0][1:]
+            secondnum = num.split(" * ")[1][:-1]
         else:
             print("Error in formula shape")
             exit(1)
 
-        if len(denum.split("+")) == 2: 
+        if len(denum.split(" + ")) == 2: 
             doperator = "+"
-            dfirstnum = denum.split("+")[0][1:]
-            dsecondnum = denum.split("+")[1][:-1]
-        elif len(denum.split("-")) == 2: 
+            dfirstnum = denum.split(" + ")[0][1:]
+            dsecondnum = denum.split(" + ")[1][:-1]
+        elif len(denum.split(" - ")) == 2: 
             doperator = "-"
-            dfirstnum = denum.split("-")[0][1:]
-            dsecondnum = denum.split("-")[1][:-1]
+            dfirstnum = denum.split(" - ")[0][1:]
+            dsecondnum = denum.split(" - ")[1][:-1]
+        elif len(denum.split(" * ")) == 2: 
+            doperator = "*"
+            dfirstnum = denum.split(" * ")[0][1:]
+            dsecondnum = denum.split(" * ")[1][:-1]
         else:
             print("Error in formula shape")
             exit(1)
@@ -162,14 +170,18 @@ if __name__ == "__main__":
         secondnum = ""
         operator = ""
 
-        if len(num.split("+")) == 2: 
+        if len(num.split(" + ")) == 2: 
             operator = "+"
-            firstnum = num.split("+")[0][1:]
-            secondnum = num.split("+")[1][:-1]
-        elif len(num.split("-")) == 2: 
+            firstnum = num.split(" + ")[0][1:]
+            secondnum = num.split(" + ")[1][:-1]
+        elif len(num.split(" - ")) == 2: 
             operator = "-"
-            firstnum = num.split("-")[0][1:]
-            secondnum = num.split("-")[1][:-1]
+            firstnum = num.split(" - ")[0][1:]
+            secondnum = num.split(" - ")[1][:-1]
+        elif len(num.split(" * ")) == 2: 
+            operator = "*"
+            firstnum = num.split(" * ")[0][1:]
+            secondnum = num.split(" * ")[1][:-1]
         else:
             print("Error in formula shape")
             exit(1)
