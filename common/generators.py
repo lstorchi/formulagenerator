@@ -134,9 +134,13 @@ def get_twofeatures (n):
     ns = n.split(" + ")
     if len(ns) != 2:
         ns = n.split(" - ")
+        if len(ns) != 2:
+             ns = n.split(" * ")
 
     fns = ns[0].replace ("**2", "")
     fns = fns.replace ("**3", "")
+    fns = fns.replace ("**4", "")
+    fns = fns.replace ("**5", "")
     fns = fns.replace ("sqrt(fabs(", "")
     fns = fns.replace ("))", "")
     fns = fns.replace ("exp(", "")
@@ -144,6 +148,8 @@ def get_twofeatures (n):
 
     sns = ns[1].replace ("**2", "")
     sns = sns.replace ("**3", "")
+    sns = sns.replace ("**4", "")
+    sns = sns.replace ("**5", "")
     sns = sns.replace ("sqrt(fabs(", "")
     sns = sns.replace ("))", "")
     sns = sns.replace ("exp(", "")
