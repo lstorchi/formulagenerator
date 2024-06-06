@@ -22,10 +22,10 @@ if __name__ == "__main__":
         toexe = ""
         if numofelements == 3:
             toexec = "python3 ./formulaptimizer.py --formula " + "\""+formula+"\" -f" \
-                "newadata.pkl."+num+" -i " +  "\"./cleandataset.xlsx,Gexp,nonxtb\""
+                "newadata.pkl."+num+" -i " +  "\"./datatousenew.xlsx,Gexp,Foglio1\""
         elif numofelements == 4:
             toexec = "python3 ./formulaptimizer.py --fourelementsformula --formula " + "\""+formula+"\" -f" \
-                "newadata.pkl."+num+" -i " +  "\"./cleandataset.xlsx,Gexp,nonxtb\""
+                "newadata.pkl."+num+" -i " +  "\"./datatousenew.xlsx,Gexp,Foglio1\""
         
         os.system(toexec)
 
