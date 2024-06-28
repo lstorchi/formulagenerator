@@ -13,8 +13,6 @@ import os
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-sys.path.append("./common/")
-
 import generators
 
 # get from here https://stackoverflow.com/questions/17778394/list-highest-correlation-pairs-from-a-large-correlation-matrix-in-pandas

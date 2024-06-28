@@ -6,8 +6,6 @@ import argparse
 
 from sklearn.linear_model import LinearRegression
 
-sys.path.append("./common/")
-
 import generators
 
 if __name__ == "__main__":

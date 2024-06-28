@@ -3,8 +3,6 @@ import argparse
 import numpy as np
 import pandas as pd
 
-sys.path.append("./common/")
-
 import generators
 
 if __name__ == "__main__":

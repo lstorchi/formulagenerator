@@ -7,8 +7,6 @@ import argparse
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score
 
-sys.path.append("./common/")
-
 import generators
 
 if __name__ == "__main__":
