@@ -97,7 +97,7 @@ class formula_gen:
                             if f != s:
                                 numer.append(f + " + " + s)
                                 numer.append(f + " - " + s)
-                                numer.append("multiply("f + " , " + s + ")")
+                                numer.append("multiply("+ f + " , " + s + ")")
 
         for classe in features:
             dim = len(features[classe])
