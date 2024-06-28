@@ -33,25 +33,19 @@ class formula_gen:
                     if not (tokval in data.columns):
                         raise NameError("Error ", tokval, \
                             " not in or undefined function ")
-                    
-        todefinevars = ""
+        toexe = ""
         for vname in variables:
-            exec(vname + "_list = []")
-            todefinevars += vname + " = None\n"
-            for v in data[vname].tolist():
-                exec(vname + "_list.append("+str(v)+")")  
+            toexe += vname + " = np.array(data[\""+vname+"\"].tolist())"
+            toexe += "\n" 
 
+        print(toexe) 
+        exec(toexe)
+        print("v = ", v)
         returnvalues = []
-        exec(todefinevars)
-        for i in range(len(data[variables[0]].tolist())):
-            for vname in variables:
-                exec(vname + " = " + vname + "_list["+str(i)+"]")
-            try:
-                nf = eval(code)
-            except:
-                return [None]
-            
-            returnvalues.append(nf)
+        print(formula)
+        exec("returnvalues = " + formula)
+        print(returnvalues) 
+        exit(0)
 
         return returnvalues
     
