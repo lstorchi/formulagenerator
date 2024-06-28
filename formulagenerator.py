@@ -78,10 +78,10 @@ class formula_gen:
 
             for i in range(dim):
                 f1.append(features[classe][i] )
-                f2.append(features[classe][i] + "**2")
-                f3.append(features[classe][i] + "**3")
-                f4.append(features[classe][i] + "**4")
-                f5.append(features[classe][i] + "**5")
+                f2.append("power("+features[classe][i] + ", 2)")
+                f3.append("power("+features[classe][i] + ". 3)")
+                f4.append("power("+features[classe][i] + ", 4)")
+                f5.append("power("+features[classe][i] + ", 5)")
                 f6.append("exp("+features[classe][i] + ")")
                 f7.append("sqrt(fabs("+features[classe][i] + "))")
                 f8.append("log(fabs("+features[classe][i] + "))")
@@ -97,22 +97,22 @@ class formula_gen:
                             if f != s:
                                 numer.append(f + " + " + s)
                                 numer.append(f + " - " + s)
-                                numer.append(f + " * " + s)
+                                numer.append("multiply("f + " , " + s + ")")
 
         for classe in features:
             dim = len(features[classe])
             for i in range(dim):
                 denom.append("exp("+features[classe][i]+")")
-                denom.append("("+features[classe][i]+"**3)")
-                denom.append("("+features[classe][i]+"**5)")
+                denom.append("power("+features[classe][i]+", 2)")
+                denom.append("power("+features[classe][i]+", 3)")
+                denom.append("power("+features[classe][i]+", 4)")
+                denom.append("power("+features[classe][i]+", 5)")
                 denom.append("sqrt(fabs("+features[classe][i] + "))")
-                denom.append(features[classe][i] + "**2")
-                denom.append(features[classe][i] + "**4")
                 denom.append("log(fabs("+features[classe][i] + "))")
         
         for n in numer:
             for d in denom:
-                formulas.append("("+n+")/("+d+")")
+                formulas.append("divide(("+n+"), ("+d+"))")
             
         if len(formulas) != len(set(formulas)):
             formulas = list(set(formulas)) 
