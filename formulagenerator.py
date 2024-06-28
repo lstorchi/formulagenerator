@@ -40,7 +40,8 @@ class formula_gen:
 
         print(toexe) 
         exec(toexe)
-        print("v = ", v)
+        for v in variables:
+            print("v = ", v)
         returnvalues = []
         print(formula)
         exec("returnvalues = " + formula)
