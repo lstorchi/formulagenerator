@@ -2,24 +2,23 @@ import numpy as np
 import pandas as pd
 from io import StringIO
 
-from math import exp
 import token
-import parser
 import tokenize
 
 ######################################################################
+
 class formula_gen:
+
     def __init__ (self, gentype, variables):
         self.__getype__ = gentype
         self.__variables__ = variables
 
     def __get_new_feature__ (self, datain, formula):
         
-        from math import exp, sqrt, fabs, log
+        from numpy import exp, sqrt, fabs, log, power, multiply, divide
 
         data = pd.DataFrame(datain)
 
-        code = parser.expr(formula).compile()
         sio = StringIO(formula)
         tokens = tokenize.generate_tokens(sio.readline)
 
@@ -27,7 +26,9 @@ class formula_gen:
         for toknum, tokval, _, _, _  in tokens:
             if toknum == token.NAME:
                 if (tokval != "exp") and (tokval != "sqrt") \
-                    and (tokval != "fabs") and (tokval != "log"):
+                    and (tokval != "fabs") and (tokval != "log") \
+                    and (tokval != "power") and (tokval != "multiply") \
+                    and (tokval != "divide"):
                     variables.append(tokval)
                     if not (tokval in data.columns):
                         raise NameError("Error ", tokval, \
