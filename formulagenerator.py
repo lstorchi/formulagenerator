@@ -5,14 +5,16 @@ from io import StringIO
 
 import token
 import tokenize
+import warnings
 
 ######################################################################
-
 class formula_gen:
 
     def __init__ (self, gentype, variables):
         self.__getype__ = gentype
         self.__variables__ = variables
+        self.__formulas__ = None
+        self.__newfeatures__ = None
 
     def __get_new_feature__ (self, datain, formula):
         
@@ -43,14 +45,20 @@ class formula_gen:
             #toexe += "\n"
             #toexe += "print("+vname+")"
             #toexe += "\n"
- 
+        
         exec(toexe)
         returnvalues = []
-        exec("eq = " + formula)
-        #exec("print(returnvalues)")
-        toexe = "for value in eq:"+ \
-                "   returnvalues.append(value)"
-        exec(toexe)
+        warnings.filterwarnings("error")
+        try:
+            exec("eq = " + formula)
+            #exec("print(returnvalues)")
+            toexe = "for value in eq:"+ \
+                    "   returnvalues.append(value)"
+            exec(toexe)
+        except RuntimeWarning as e:
+            return [None]
+        
+        warnings.resetwarnings()
 
         return returnvalues
     
@@ -78,7 +86,7 @@ class formula_gen:
             for i in range(dim):
                 f1.append(features[classe][i] )
                 f2.append("power("+features[classe][i] + ", 2)")
-                f3.append("power("+features[classe][i] + ". 3)")
+                f3.append("power("+features[classe][i] + ", 3)")
                 f4.append("power("+features[classe][i] + ", 4)")
                 f5.append("power("+features[classe][i] + ", 5)")
                 f6.append("exp("+features[classe][i] + ")")
@@ -120,9 +128,9 @@ class formula_gen:
         
 
     def fit (self, x, y):
-        formulas = []
+        self.__formulas__ = []
         if self.__getype__ == "gen1":
-           formulas = self.__fit_gen1__ ()
+           self.__formulas__ = self.__fit_gen1__ ()
 
         data = {}
         i = 0
@@ -135,21 +143,26 @@ class formula_gen:
                 i += 1
 
         fidxtorm = []
-        for idxf, f in enumerate(formulas):
+        self.__newfeatures__ = []
+        for idxf, f in enumerate(self.__formulas__):
             newf = self.__get_new_feature__(data, f) 
             if newf[0] == None:
                 fidxtorm.append(idxf)
                 #print(" torm :", f)
+                self.__newfeatures__.append([])
             else:
-                print(f)
+                self.__newfeatures__.append(newf)
+                #print(f)
+                #for i in range(len(newf)):
+                #    v = data["v"][i]
+                #    cE = data["cE"][i]
+                #    print(v, cE)
+                #    print((v+cE) / math.exp(v),  newf[i])
 
-                for i in range(len(newf)):
-                    v = data["v"][i]
-                    cE = data["cE"][i]
-                    print(v, cE)
-                    print((v+cE) / math.exp(v),  newf[i])
-                exit()
-
+        for index in sorted(fidxtorm, reverse=True):
+            del self.__newfeatures__[index]
+            del self.__formulas__[index]
+                
         return 
 
     def predict (self, x, verbose=0):
