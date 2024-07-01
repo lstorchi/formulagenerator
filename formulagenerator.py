@@ -7,6 +7,8 @@ import token
 import tokenize
 import warnings
 
+from sklearn.linear_model import LinearRegression
+
 ######################################################################
 class formula_gen:
 
@@ -15,6 +17,10 @@ class formula_gen:
         self.__variables__ = variables
         self.__formulas__ = None
         self.__newfeatures__ = None
+        self.__bestformula__ = None
+        self.__bestlr__ = None
+        self.__bestnewf__ = None
+
 
     def __get_new_feature__ (self, datain, formula):
         
@@ -60,7 +66,7 @@ class formula_gen:
         
         warnings.resetwarnings()
 
-        return returnvalues
+        return np.array(returnvalues)
     
     
     def __fit_gen1__ (self):
@@ -128,6 +134,10 @@ class formula_gen:
         
 
     def fit (self, x, y):
+
+        if type(x) != np.ndarray:
+            raise Exception("Error: x should be a numpy array")
+
         self.__formulas__ = []
         if self.__getype__ == "gen1":
            self.__formulas__ = self.__fit_gen1__ ()
@@ -162,16 +172,51 @@ class formula_gen:
         for index in sorted(fidxtorm, reverse=True):
             del self.__newfeatures__[index]
             del self.__formulas__[index]
-                
+
+        bestmse = float("inf") 
+        for i in range(len(self.__newfeatures__)):
+            lr = LinearRegression()
+            #print("formula: ", self.__formulas__[i])
+            lr.fit(self.__newfeatures__[i].reshape(-1, 1), y)
+            #print("coef: ", lr.coef_)
+            #print("intercept: ", lr.intercept_)
+            #print("score: ", lr.score(self.__newfeatures__[i].reshape(-1, 1), y))
+            mse = np.mean((lr.predict(self.__newfeatures__[i].reshape(-1, 1)) - y) ** 2)
+            if mse < bestmse:
+                bestmse = mse
+                self.__bestformula__ = self.__formulas__[i]
+                self.__bestlr__ = lr
+                self.__bestnewf__ = self.__newfeatures__[i]
+
         return 
 
     def predict (self, x, verbose=0):
         pred_y = []
+
+        if type(x) != np.ndarray:
+            raise Exception("Error: x should be a numpy array")
+
+        data = {}
+        i = 0
+        for c in self.__variables__:
+            for bf in self.__variables__[c]:
+                if i > x.shape[1]:
+                    raise Exception("Error: too many basic features") 
+
+                data[bf] = list(x[:,i])
+                i += 1
+        
+        newf = self.__get_new_feature__(data, self.__bestformula__) 
+        if newf[0] == None:
+            raise Exception("Error: new feature could not be generated")
+        
+    
         for i in range(x.shape[0]):
             yval = []
             for j in range(x.shape[1]):
                 yval.append(0.0)
             pred_y.append (0.0)
+
         return np.asarray(pred_y)
 
 ######################################################################
