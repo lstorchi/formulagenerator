@@ -1,3 +1,4 @@
+import math
 import numpy as np
 import pandas as pd
 from io import StringIO
@@ -18,6 +19,7 @@ class formula_gen:
         from numpy import exp, sqrt, fabs, log, power, multiply, divide
 
         data = pd.DataFrame(datain)
+        #print(data.columns)
 
         sio = StringIO(formula)
         tokens = tokenize.generate_tokens(sio.readline)
@@ -35,18 +37,20 @@ class formula_gen:
                             " not in or undefined function ")
         toexe = ""
         for vname in variables:
-            toexe += vname + " = np.array(data[\""+vname+"\"].tolist())"
+            toexe += vname + " = np.array(data[\""+vname+"\"].tolist(), dtype=np.float64)"
             toexe += "\n" 
-
-        print(toexe) 
+            #toexe += "print(type("+vname+"), "+vname+".shape )"
+            #toexe += "\n"
+            #toexe += "print("+vname+")"
+            #toexe += "\n"
+ 
         exec(toexe)
-        for v in variables:
-            print("v = ", v)
         returnvalues = []
-        print(formula)
-        exec("returnvalues = " + formula)
-        print(returnvalues) 
-        exit(0)
+        exec("eq = " + formula)
+        #exec("print(returnvalues)")
+        toexe = "for value in eq:"+ \
+                "   returnvalues.append(value)"
+        exec(toexe)
 
         return returnvalues
     
@@ -142,10 +146,8 @@ class formula_gen:
                 for i in range(len(newf)):
                     v = data["v"][i]
                     cE = data["cE"][i]
-                    print(v)
-                    print(cE)
-                    print(eval(f))
-                    print(newf[i])
+                    print(v, cE)
+                    print((v+cE) / math.exp(v),  newf[i])
                 exit()
 
         return 
