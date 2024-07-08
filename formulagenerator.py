@@ -187,8 +187,23 @@ class formula_gen:
                 self.__bestformula__ = self.__formulas__[i]
                 self.__bestlr__ = lr
                 self.__bestnewf__ = self.__newfeatures__[i]
+                
+        return
 
-        return 
+
+    def fit_refinment (self, x, y):
+
+        if type(x) != np.ndarray:
+            raise Exception("Error: x should be a numpy array")
+        
+        if self.__bestformula__ == None:
+            raise Exception("Error: model not fitted")
+
+        # split formul in tokens and add weigth to each token
+        raise Exception("Error: not implemented")
+
+        return
+
 
     def predict (self, x, verbose=0):
         pred_y = []
@@ -210,14 +225,24 @@ class formula_gen:
         if newf[0] == None:
             raise Exception("Error: new feature could not be generated")
         
-    
-        for i in range(x.shape[0]):
-            yval = []
-            for j in range(x.shape[1]):
-                yval.append(0.0)
-            pred_y.append (0.0)
+        pred_y = self.__bestlr__.predict(newf.reshape(-1, 1))
 
         return np.asarray(pred_y)
+    
+
+    def get_formula (self):
+
+        formula = ""
+        if self.__getype__ == "gen1":
+            if self.__bestformula__ == None:
+                raise Exception("Error: model not fitted")
+
+            formula = str("%10.5e"%(self.__bestlr__.intercept_[0]))  + " + (" + \
+                str("%10.5e"%(self.__bestlr__.coef_[0][0])) + " * " + \
+                    self.__bestformula__ + ")"
+            
+
+        return formula
 
 ######################################################################
 
