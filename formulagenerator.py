@@ -17,10 +17,10 @@ class formula_gen:
         self.__variables__ = variables
         self.__formulas__ = None
 
-        self.__newfeatures__ = None
         self.__bestformula__ = None
         self.__bestlr__ = None
         self.__bestnewf__ = None
+        self.__bestmse__ = None
 
 
     def __get_new_feature__ (self, datain, formula):
@@ -133,16 +133,99 @@ class formula_gen:
         
         return formulas
     
-    def __refine_gen1__ (self):
+    def __refine_gen1__ (self, x, y, numofinterval, roundto):
 
         if self.__bestformula__ == None:
             raise Exception("Error: model not fitted")
         
-        if self.__newfeatures__ == None:
-            raise Exception("Error: new features not generated")
+        #print("best formula: ", self.__bestformula__)
+        #print("best rmse: ", self.__bestmse__)
 
-        raise Exception("Error: not implemented")
+        num = self.__bestformula__.split("/")[0]
+        denum = self.__bestformula__.split("/")[1]
 
+        a = ""
+        b = ""
+        op = ""
+        if num.find(" + ") != -1:
+            a = num.split(" + ")[0]
+            b = num.split(" + ")[1]
+            op = " + "
+        elif num.find(" - ") != -1:
+            a = num.split(" - ")[0]
+            b = num.split(" - ")[1]
+            op = " - "
+        elif num.find(" * ") != -1:
+            a = num.split(" * ")[0]
+            b = num.split(" * ")[1]
+            op = " * "
+        
+        a = a.replace(" ", "")
+        b = b.replace(" ", "")
+        denum = denum.replace(" ", "")
+
+        a = a[1:]
+        b = b[:-1]
+        denum = denum[1:-1]
+
+        #print("a: ", a)
+        #print("b: ", b)
+        #print("denum: ", denum)
+
+        foundabestone = False
+        dx = 1.0/float(numofinterval)
+        aw = 0.0
+        for ia in range(numofinterval):
+            aw = aw + dx
+            bw = 0.0
+            for ib in range(numofinterval):
+                bw = bw + dx
+                denumw = 0.0
+                for idenum in range(numofinterval):
+                    denumw = denumw + dx
+
+                    if aw == bw and aw == denumw:
+                        continue
+
+                    #round numbers to 2 decimal places
+                    aw = round(aw, roundto)
+                    bw = round(bw, roundto)
+                    denumw = round(denumw, roundto)
+
+                    newformula = "(" + str(aw) + " * " + a + ") " + op + " (" + \
+                        str(bw) + " * " + b + ") / (" + \
+                        str(denumw) + " * " + denum + ")"
+                    #print("new formula: ", newformula)
+
+                    data = {}
+                    i = 0
+                    for c in self.__variables__:
+                        for bf in self.__variables__[c]:
+                            if i > x.shape[1]:
+                                raise Exception("Error: too many basic features") 
+
+                            data[bf] = list(x[:,i])
+                            i += 1
+                    
+                    newf = self.__get_new_feature__(data, newformula)
+
+                    lr = LinearRegression()
+                    lr.fit(newf.reshape(-1, 1), y)
+                    mse = np.mean((lr.predict(newf.reshape(-1, 1)) - y) ** 2)
+                    #print("new formula: ", newformula, " mse: ", mse)
+                    if mse < self.__bestmse__:
+                        self.__bestmse__ = mse
+                        self.__bestformula__ = newformula
+                        self.__bestlr__ = lr
+                        self.__bestnewf__ = newf
+                        foundabestone = True
+        
+        #print("best formula: ", self.__bestformula__)
+        #print("best rmse: ", self.__bestmse__)
+        #raise Exception("Error: not implemented")
+
+        return foundabestone
+    
 
     def fit (self, x, y):
 
@@ -164,15 +247,15 @@ class formula_gen:
                 i += 1
 
         fidxtorm = []
-        self.__newfeatures__ = []
+        newfeatures = []
         for idxf, f in enumerate(self.__formulas__):
             newf = self.__get_new_feature__(data, f) 
             if newf[0] == None:
                 fidxtorm.append(idxf)
                 #print(" torm :", f)
-                self.__newfeatures__.append([])
+                newfeatures.append([])
             else:
-                self.__newfeatures__.append(newf)
+                newfeatures.append(newf)
                 #print(f)
                 #for i in range(len(newf)):
                 #    v = data["v"][i]
@@ -181,38 +264,35 @@ class formula_gen:
                 #    print((v+cE) / math.exp(v),  newf[i])
 
         for index in sorted(fidxtorm, reverse=True):
-            del self.__newfeatures__[index]
+            del newfeatures[index]
             del self.__formulas__[index]
 
-        bestmse = float("inf") 
-        for i in range(len(self.__newfeatures__)):
+        self.__bestmse__ = float("inf") 
+        for i in range(len(newfeatures)):
             lr = LinearRegression()
-            #print("formula: ", self.__formulas__[i])
-            lr.fit(self.__newfeatures__[i].reshape(-1, 1), y)
-            #print("coef: ", lr.coef_)
-            #print("intercept: ", lr.intercept_)
-            #print("score: ", lr.score(self.__newfeatures__[i].reshape(-1, 1), y))
-            mse = np.mean((lr.predict(self.__newfeatures__[i].reshape(-1, 1)) - y) ** 2)
-            if mse < bestmse:
-                bestmse = mse
+            newf = newfeatures[i]
+            lr.fit(newf.reshape(-1, 1), y)
+            mse = np.mean((lr.predict(newf.reshape(-1, 1)) - y) ** 2)
+            if mse < self.__bestmse__:
+                self.__bestmse__ = mse
                 self.__bestformula__ = self.__formulas__[i]
                 self.__bestlr__ = lr
-                self.__bestnewf__ = self.__newfeatures__[i]
-                
+                self.__bestnewf__ = newf
+
         return
 
 
-    def fit_refinment (self):
+    def fit_refinment (self, x, y, numofinterval=10, roundto=2):
         
         if self.__bestformula__ == None:
             raise Exception("Error: model not fitted")
 
         if self.__getype__ == "gen1":
-            self.__refine_gen1__()
+            return self.__refine_gen1__(x, y, numofinterval, roundto)
         else:
             raise Exception("Error: not implemented")
 
-        return
+        return False
 
 
     def predict (self, x, verbose=0):
