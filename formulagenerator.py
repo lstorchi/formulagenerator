@@ -258,7 +258,44 @@ class formula_gen:
         # maybe I can remove the not importante features to have a shorter formula
 
         return False    
+
+
+    def __fit_gen3__ (self):
+
+        formulas = []
+
+        features = []
+        for classe in self.__variables__.keys():
+            for bf in self.__variables__[classe]:
+                features.append(bf)
+
+        elements = []
+        for f in features:
+            elements.append("exp("+f+")")
+            elements.append("("+f+"**2)")
+            elements.append("("+f+"**3)")
+            elements.append("("+f+"**4)")
+            elements.append("("+f+"**5)")
+            elements.append("sqrt(fabs("+f + "))")
+            elements.append("log(fabs("+f + "))")
+
+        for i in range(len(elements)):
+            for j in range(len(elements)):
+                if i != j:
+                    formulas.append(elements[i] + " / " + elements[j])
+
+        multiple = True
+        return formulas, multiple
+
+
+    def __refine_gen3__ (self):
+
+        # cannot be rifined
+        # maybe I can remove the not importante features to have a shorter formula
+
+        return False    
     
+
 
     def fit (self, x, y):
 
@@ -273,6 +310,9 @@ class formula_gen:
         elif self.__getype__ == "gen2":
             self.__formulas__ , self.__mutiple__ \
                   = self.__fit_gen2__ ()
+        elif self.__getype__ == "gen3":
+            self.__formulas__ , self.__mutiple__ \
+                  = self.__fit_gen3__ ()
 
         data = {}
         i = 0
@@ -344,6 +384,8 @@ class formula_gen:
             return self.__refine_gen1__(x, y, numofinterval, roundto)
         elif self.__getype__ == "gen2":
             return self.__refine_gen2__()
+        elif self.__getype__ == "gen3":
+            return self.__refine_gen3__()
         else:
             raise Exception("Error: not implemented")
 
@@ -369,12 +411,22 @@ class formula_gen:
         pred_y = None
         if self.__mutiple__ :
             newfeatures = []
+            idxtofill = []
             for idxf, f in enumerate(self.__formulas__):
                 newf = self.__get_new_feature__(data, f) 
                 if newf[0] == None:
-                    raise Exception("Error: new feature could not be generated")
+                    # raise a warning and continue
+                    #warnings.warn("new feature could not be generated " + f)
+                    newfeatures.append([])
+                    idxtofill.append(idxf)
                 else:
                     newfeatures.append(newf)
+
+            dim  = len(newfeatures[-1])
+            for index in sorted(idxtofill, reverse=True):
+                for i in range(dim):
+                    newfeatures[index].append(0.0)
+    
             newf = np.array(newfeatures).T
             pred_y = self.__bestlr__.predict(newf)
         else:
