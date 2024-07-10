@@ -21,6 +21,7 @@ class formula_gen:
         self.__bestlr__ = None
         self.__bestnewf__ = None
         self.__bestmse__ = None
+        self.__mutiple__ = None
 
 
     def __get_new_feature__ (self, datain, formula):
@@ -224,7 +225,39 @@ class formula_gen:
         #print("best rmse: ", self.__bestmse__)
         #raise Exception("Error: not implemented")
 
-        return foundabestone
+        multiple = False
+        return foundabestone, multiple
+    
+
+    def __fit_gen2__ (self):
+
+        formulas = []
+
+
+        features = []
+        for classe in self.__variables__.keys():
+            for bf in self.__variables__[classe]:
+                features.append(bf)
+
+        for f in features:
+            formulas.append("exp("+f+")")
+            formulas.append("("+f+"**2)")
+            formulas.append("("+f+"**3)")
+            formulas.append("("+f+"**4)")
+            formulas.append("("+f+"**5)")
+            formulas.append("sqrt(fabs("+f + "))")
+            formulas.append("log(fabs("+f + "))")
+
+        multiple = True
+        return formulas, multiple
+
+
+    def __refine_gen2__ (self):
+
+        # cannot be rifined
+        # maybe I can remove the not importante features to have a shorter formula
+
+        return False    
     
 
     def fit (self, x, y):
@@ -233,8 +266,13 @@ class formula_gen:
             raise Exception("Error: x should be a numpy array")
 
         self.__formulas__ = []
+        self.__mutiple__  = None
         if self.__getype__ == "gen1":
-           self.__formulas__ = self.__fit_gen1__ ()
+            self.__formulas__ , self.__mutiple__ \
+                  = self.__fit_gen1__ ()
+        elif self.__getype__ == "gen2":
+            self.__formulas__ , self.__mutiple__ \
+                  = self.__fit_gen2__ ()
 
         data = {}
         i = 0
@@ -252,7 +290,6 @@ class formula_gen:
             newf = self.__get_new_feature__(data, f) 
             if newf[0] == None:
                 fidxtorm.append(idxf)
-                #print(" torm :", f)
                 newfeatures.append([])
             else:
                 newfeatures.append(newf)
@@ -268,16 +305,32 @@ class formula_gen:
             del self.__formulas__[index]
 
         self.__bestmse__ = float("inf") 
-        for i in range(len(newfeatures)):
+
+        if self.__mutiple__:
             lr = LinearRegression()
-            newf = newfeatures[i]
-            lr.fit(newf.reshape(-1, 1), y)
-            mse = np.mean((lr.predict(newf.reshape(-1, 1)) - y) ** 2)
-            if mse < self.__bestmse__:
-                self.__bestmse__ = mse
-                self.__bestformula__ = self.__formulas__[i]
-                self.__bestlr__ = lr
-                self.__bestnewf__ = newf
+            newf = np.array(newfeatures).T
+            lr.fit(newf, y)
+            mse = np.mean((lr.predict(newf) - y) ** 2)
+            self.__bestmse__ = mse
+            self.__bestformula__ = str(lr.intercept_[0])
+            for i in range(len(lr.coef_[0])):
+                self.__bestformula__ += " + (" + str(lr.coef_[0][i]) + " * " \
+                    + self.__formulas__[i] + ")"
+            self.__bestlr__ = lr
+            self.__bestnewf__ = newf
+        else:
+            for i in range(len(newfeatures)):
+                lr = LinearRegression()
+                newf = newfeatures[i]
+                if len(newf.shape) == 1:
+                    newf = newf.reshape(-1, 1)
+                lr.fit(newf, y)
+                mse = np.mean((lr.predict(newf) - y) ** 2)
+                if mse < self.__bestmse__:
+                    self.__bestmse__ = mse
+                    self.__bestformula__ = self.__formulas__[i]
+                    self.__bestlr__ = lr
+                    self.__bestnewf__ = newf
 
         return
 
@@ -289,6 +342,8 @@ class formula_gen:
 
         if self.__getype__ == "gen1":
             return self.__refine_gen1__(x, y, numofinterval, roundto)
+        elif self.__getype__ == "gen2":
+            return self.__refine_gen2__()
         else:
             raise Exception("Error: not implemented")
 
@@ -311,11 +366,24 @@ class formula_gen:
                 data[bf] = list(x[:,i])
                 i += 1
         
-        newf = self.__get_new_feature__(data, self.__bestformula__) 
-        if newf[0] == None:
-            raise Exception("Error: new feature could not be generated")
-        
-        pred_y = self.__bestlr__.predict(newf.reshape(-1, 1))
+        pred_y = None
+        if self.__mutiple__ :
+            newfeatures = []
+            for idxf, f in enumerate(self.__formulas__):
+                newf = self.__get_new_feature__(data, f) 
+                if newf[0] == None:
+                    raise Exception("Error: new feature could not be generated")
+                else:
+                    newfeatures.append(newf)
+            newf = np.array(newfeatures).T
+            pred_y = self.__bestlr__.predict(newf)
+        else:
+            newf = self.__get_new_feature__(data, self.__bestformula__) 
+            if newf[0] == None:
+                raise Exception("Error: new feature could not be generated")
+            if len(newf.shape) == 1:
+                newf = newf.reshape(-1, 1)
+            pred_y = self.__bestlr__.predict(newf)
 
         return np.asarray(pred_y)
     
