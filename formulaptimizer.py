@@ -5,6 +5,7 @@ import pandas as pd
 import argparse
 
 from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import LeaveOneOut
 from sklearn.metrics import r2_score
 
 sys.path.append("./common/")
@@ -14,6 +15,7 @@ import generators
 if __name__ == "__main__":
     name = "Name"
     tabtoread = "nonxtb"
+    useloo = False
 
     quiet = True
 
@@ -29,11 +31,15 @@ if __name__ == "__main__":
     parser.add_argument("--fourelementsformula", \
             help="Generate formulas including four elements", action="store_true",
             required=False, default=False)
+    parser.add_argument("--useloo", \
+                        help="Use LeaveOneOut", action="store_true",
+                        required=False, default=False)
 
     args = parser.parse_args()
 
     fname = args.file
     formula = args.formula
+    useloo = args.useloo
 
     sline = args.inputlabels.split(",")
 
@@ -72,6 +78,12 @@ if __name__ == "__main__":
     bestformula = formula
     best_y_pred = y_pred
     best_regressor = regressor
+
+    bestr2_test = 0.0
+    bestr2_train = 0.0
+
+    if useloo:
+        bestr2 = 0.0
 
     if not quiet:
         print("%10.5f "%(bestr2), bestformula)
@@ -148,17 +160,55 @@ if __name__ == "__main__":
 
                         newx = generators.get_new_feature(data, newf)
                         newx = np.asarray(newx)
-                        regressor = LinearRegression()
-                        regressor.fit(newx.reshape(-1, 1), y)
-                        y_pred = regressor.predict(newx.reshape(-1,1))
 
-                        r2v = r2_score (y, y_pred)
+                        if useloo:
+                            x = newx
+                            loo = LeaveOneOut()
+                            loo.get_n_splits(x)
+                            r2vstest = []
+                            r2vstrain = []
+                            for train_index, test_index in loo.split(x):
+                                X_train, X_test = x[train_index], x[test_index]
+                                y_train, y_test = y[train_index], y[test_index]
+                                regressor = LinearRegression()
+                                regressor.fit(X_train.reshape(-1, 1), y_train)
 
-                        if (r2v > bestr2):
-                            bestr2 = r2v 
-                            bestformula = newf
-                            best_y_pred = y_pred
-                            best_regressor = regressor
+                                y_pred = regressor.predict(X_test.reshape(-1,1))
+                                r2v = r2_score (y_test, y_pred)
+                                r2vstest.append(r2v)
+
+                                y_pred = regressor.predict(X_train.reshape(-1,1))
+                                r2v = r2_score (y_train, y_pred)
+                                r2vstrain.append(r2v)
+
+                            r2vtest = np.mean(r2vstest)
+                            r2vtrain = np.mean(r2vstrain)
+
+                            regressor = LinearRegression()
+                            regressor.fit(newx.reshape(-1, 1), y)
+                            y_pred = regressor.predict(newx.reshape(-1,1))
+                            r2v = r2_score (y, y_pred)
+                            r2v = r2vtest
+                            
+                            if (r2v > bestr2):                 
+                                bestr2 = r2v 
+                                bestformula = newf
+                                best_y_pred = y_pred
+                                best_regressor = regressor
+                                bestr2_test = r2vtest
+                                bestr2_train = r2vtrain
+                        else:
+                            regressor = LinearRegression()
+                            regressor.fit(newx.reshape(-1, 1), y)
+                            y_pred = regressor.predict(newx.reshape(-1,1))
+
+                            r2v = r2_score (y, y_pred)
+
+                            if (r2v > bestr2):
+                                bestr2 = r2v 
+                                bestformula = newf
+                                best_y_pred = y_pred
+                                best_regressor = regressor
 
                         #print("%10.5f "%(r2v), newf)
                         d += np.float64(np.float64(1.0)/(np.float64(nstep)))
@@ -205,59 +255,104 @@ if __name__ == "__main__":
 
                     newx = generators.get_new_feature(data, newf)
                     newx = np.asarray(newx)
-                    regressor = LinearRegression()
-                    regressor.fit(newx.reshape(-1, 1), y)
-                    y_pred = regressor.predict(newx.reshape(-1,1))
 
-                    r2v = r2_score (y, y_pred)
+                    if useloo:
+                        x = newx
+                        loo = LeaveOneOut()
+                        loo.get_n_splits(x)
+                        r2vstest = []
+                        r2vstrain = []
+                        for train_index, test_index in loo.split(x):
+                            X_train, X_test = x[train_index], x[test_index]
+                            y_train, y_test = y[train_index], y[test_index]
+                            regressor = LinearRegression()
+                            regressor.fit(X_train.reshape(-1, 1), y_train)
 
-                    if (r2v > bestr2):
-                        bestr2 = r2v 
-                        bestformula = newf
-                        best_y_pred = y_pred
-                        best_regressor = regressor
+                            y_pred = regressor.predict(X_test.reshape(-1,1))
+                            r2v = r2_score (y_test, y_pred)
+                            r2vstest.append(r2v)
 
-                    #print("%10.5f "%(r2v), newf)
+                            y_pred = regressor.predict(X_train.reshape(-1,1))
+                            r2v = r2_score (y_train, y_pred)
+                            r2vstrain.append(r2v)
+
+                        r2vtest = np.mean(r2vstest)
+                        r2vtrain = np.mean(r2vstrain)
+
+                        regressor = LinearRegression()
+                        regressor.fit(newx.reshape(-1, 1), y)
+                        y_pred = regressor.predict(newx.reshape(-1,1))
+                        r2v = r2_score (y, y_pred)
+                        r2v = r2vtest
+                        
+                        if (r2v > bestr2):                 
+                            bestr2 = r2v 
+                            bestformula = newf
+                            best_y_pred = y_pred
+                            best_regressor = regressor
+                            bestr2_test = r2vtest
+                            bestr2_train = r2vtrain
+                    else:
+                        regressor = LinearRegression()
+                        regressor.fit(newx.reshape(-1, 1), y)
+                        y_pred = regressor.predict(newx.reshape(-1,1))
+                    
+                        r2v = r2_score (y, y_pred)
+                    
+                        if (r2v > bestr2):
+                            bestr2 = r2v 
+                            bestformula = newf
+                            best_y_pred = y_pred
+                            best_regressor = regressor
+                    
+                        #print("%10.5f "%(r2v), newf)
 
                     c += np.float64(np.float64(1.0)/(np.float64(nstep)))
                 b += 1.0/(np.float64(nstep))
             a += 1.0/(np.float64(nstep))
-
-    if not quiet:
+    
+    if useloo:
         print("%10.5f "%(bestr2), bestformula)
         print('Coefficients: %15.8f Intercept: %15.8f\n'%( \
-            best_regressor.coef_[0], best_regressor.intercept_))
-    else:
-         print("%10.5f "%(bestr2), " , ", best_regressor.intercept_, " + (",  \
-               best_regressor.coef_[0], " ) * (" , \
-               bestformula, " )")
-   
-    if not quiet:
-        for i, yv in enumerate(y):
-           print("%10.5f , %10.5f"%(yv, best_y_pred[i]))
-        
-    if not quiet:
-        plt.scatter(best_y_pred, y,  color='black')
+                best_regressor.coef_[0], best_regressor.intercept_))
+        print("Test R2: ", bestr2_test, " Train R2: ", bestr2_train)
+
+    else:    
+        if not quiet:
+            print("%10.5f "%(bestr2), bestformula)
+            print('Coefficients: %15.8f Intercept: %15.8f\n'%( \
+                best_regressor.coef_[0], best_regressor.intercept_))
+        else:
+             print("%10.5f "%(bestr2), " , ", best_regressor.intercept_, " + (",  \
+                   best_regressor.coef_[0], " ) * (" , \
+                   bestformula, " )")
+       
+        if not quiet:
+            for i, yv in enumerate(y):
+               print("%10.5f , %10.5f"%(yv, best_y_pred[i]))
             
-        i = 0
-        for x,y in zip(best_y_pred,y):
-            label = labels[i]
-            
-            plt.annotate(label, # this is the text
-                         (x,y), # this is the point to label
-                         textcoords="offset points", # how to position the text
-                         xytext=(2,2), # distance from text to points (x,y)
-                         ha='center') # horizontal alignment can be left, right or center
-            
-            i += 1
-            
-        #plt.xticks(())
-        #plt.yticks(())
-            
-        plt.title(sheetname + " " + str(best_regressor.coef_) + \
-                    " * " + bestformula + " + " + str(best_regressor.intercept_))
-            
-        plt.xlabel("Predicted values " + labelname)
-        plt.ylabel("Real values " + labelname)
-            
-        plt.show()
+        if not quiet:
+            plt.scatter(best_y_pred, y,  color='black')
+                
+            i = 0
+            for x,y in zip(best_y_pred,y):
+                label = labels[i]
+                
+                plt.annotate(label, # this is the text
+                             (x,y), # this is the point to label
+                             textcoords="offset points", # how to position the text
+                             xytext=(2,2), # distance from text to points (x,y)
+                             ha='center') # horizontal alignment can be left, right or center
+                
+                i += 1
+                
+            #plt.xticks(())
+            #plt.yticks(())
+                
+            plt.title(sheetname + " " + str(best_regressor.coef_) + \
+                        " * " + bestformula + " + " + str(best_regressor.intercept_))
+                
+            plt.xlabel("Predicted values " + labelname)
+            plt.ylabel("Real values " + labelname)
+                
+            plt.show()
