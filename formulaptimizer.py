@@ -54,10 +54,15 @@ if __name__ == "__main__":
     df = pd.read_pickle(fname)
     
     x = df[formula].values
-    
-    data = pd.read_excel(excelfile, sheetname)
-    y = data[labelname].values
 
+    try:
+        data = pd.read_excel(excelfile, sheetname)
+        y = data[labelname].values
+    except:
+        print("Error in reading ", excelfile, " ", sheetname)
+        print(pd.ExcelFile(excelfile).sheet_names)
+        exit(1)
+    
     labels = []
     if not quiet:
         print(data.columns)

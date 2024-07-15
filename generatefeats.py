@@ -185,15 +185,16 @@ if __name__ == "__main__":
             print ("Start generating features...")
         last = args.dumponly
 
+        # in case I want to test a single formula
         max = last  
         if last < 0:
             max = len(formulas)
 
-        newdataframe = {}
-        #print(formulas )
-        
-        for idx, formula in enumerate(formulas[0:last]):
+        #print("Max ", max, last)
 
+        newdataframe = {}
+        for idx, formula in enumerate(formulas[0:max]):
+            #print(formula)
             if args.verbose:
                 print ("%10d of %10d"%(idx+1, max))
                 sys.stdout.flush()
