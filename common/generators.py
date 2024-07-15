@@ -159,9 +159,13 @@ def get_twofeatures (n):
 
 ###############################################################################
 
-def generate_formulas_four (features, positivefeatureslist = [""]):
+def generate_formulas_four (features, positivefeatureslist = [""], \
+                            howmanydiffs = 4):
 
     formulas  = []
+
+    #print("Positive features list ", positivefeatureslist)
+    #print("Features ", features)
 
     numer = []
     deno = []
@@ -208,10 +212,10 @@ def generate_formulas_four (features, positivefeatureslist = [""]):
                             deno.append(f + " - " + s)
                             deno.append(f + " * " + s)
 
-
     for n in numer:
         for d in deno:
             if n != d:
+                #print("N ", n, " D ", d)
                 bfset = set()
                 fn, sn = get_twofeatures (n)
                 fd, sd = get_twofeatures (d)
@@ -220,7 +224,7 @@ def generate_formulas_four (features, positivefeatureslist = [""]):
                 bfset.add(fd)
                 bfset.add(sd)
 
-                if len(bfset) == 4:
+                if len(bfset) == howmanydiffs:
                     #print(bfset)
                     formulas.append("("+n+")/("+d+")")
             

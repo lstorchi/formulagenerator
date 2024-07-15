@@ -167,7 +167,8 @@ if __name__ == "__main__":
 
         if args.fourelementsformula:
             formulas = generators.generate_formulas_four (basicfeaturesdict, \
-                                                          positivefeatureslist)
+                                                          positivefeatureslist, 
+                                                          howmanydiffs=3)
         else:
             formulas = generators.generate_formulas (basicfeaturesdict, \
                                                      positivefeatureslist)
@@ -189,6 +190,7 @@ if __name__ == "__main__":
             max = len(formulas)
 
         newdataframe = {}
+        #print(formulas )
         
         for idx, formula in enumerate(formulas[0:last]):
 
