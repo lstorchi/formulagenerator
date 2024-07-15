@@ -186,6 +186,7 @@ if __name__ == "__main__":
         last = args.dumponly
 
         # in case I want to test a single formula
+
         max = last  
         if last < 0:
             max = len(formulas)

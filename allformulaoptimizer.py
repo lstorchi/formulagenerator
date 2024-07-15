@@ -26,7 +26,7 @@ if __name__ == "__main__":
             toexec = "python3 ./formulaptimizer.py --formula " + "\""+formula+"\" -f" \
                 "newadata.pkl."+num+" -i " +  "\""+execelfnam+",Gexp,"+sheetname+"\""
         elif numofelements == 4:
-            toexec = "python3 ./formulaptimizer.py --fourelementsformula --formula " + "\""+formula+"\" -f" \
+            toexec = "python3 ./formulaptimizer.py --useloo --fourelementsformula --formula " + "\""+formula+"\" -f" \
                 "newadata.pkl."+num+" -i " +  "\""+execelfnam+",Gexp,"+sheetname+"\""
         
         os.system(toexec)

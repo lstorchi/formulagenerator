@@ -6,7 +6,7 @@ import argparse
 
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import LeaveOneOut
-from sklearn.metrics import r2_score
+from sklearn.metrics import r2_score, mean_squared_error as mse_score
 
 sys.path.append("./common/")
 
@@ -84,8 +84,8 @@ if __name__ == "__main__":
     best_y_pred = y_pred
     best_regressor = regressor
 
-    bestr2_test = 0.0
-    bestr2_train = 0.0
+    bestrmse_test = 0.0
+    bestrmse_train = 0.0
 
     if useloo:
         bestr2 = 0.0
@@ -170,8 +170,8 @@ if __name__ == "__main__":
                             x = newx
                             loo = LeaveOneOut()
                             loo.get_n_splits(x)
-                            r2vstest = []
-                            r2vstrain = []
+                            rmsestest = []
+                            rmsestrain = []
                             for train_index, test_index in loo.split(x):
                                 X_train, X_test = x[train_index], x[test_index]
                                 y_train, y_test = y[train_index], y[test_index]
@@ -179,29 +179,29 @@ if __name__ == "__main__":
                                 regressor.fit(X_train.reshape(-1, 1), y_train)
 
                                 y_pred = regressor.predict(X_test.reshape(-1,1))
-                                r2v = r2_score (y_test, y_pred)
-                                r2vstest.append(r2v)
+                                # compute root mean squared error
+                                rmse = np.sqrt(mse_score (y_test, y_pred))
+                                rmsestest.append(rmse)
 
                                 y_pred = regressor.predict(X_train.reshape(-1,1))
-                                r2v = r2_score (y_train, y_pred)
-                                r2vstrain.append(r2v)
+                                rmse = np.sqrt(mse_score (y_train, y_pred))
+                                rmsestrain.append(rmse)
 
-                            r2vtest = np.mean(r2vstest)
-                            r2vtrain = np.mean(r2vstrain)
+                            rmsetest = np.mean(rmsestest)
+                            rmsetrain = np.mean(rmsestrain)
 
                             regressor = LinearRegression()
                             regressor.fit(newx.reshape(-1, 1), y)
                             y_pred = regressor.predict(newx.reshape(-1,1))
                             r2v = r2_score (y, y_pred)
-                            r2v = r2vtest
                             
                             if (r2v > bestr2):                 
                                 bestr2 = r2v 
                                 bestformula = newf
                                 best_y_pred = y_pred
                                 best_regressor = regressor
-                                bestr2_test = r2vtest
-                                bestr2_train = r2vtrain
+                                bestrmse_test = rmsetest
+                                bestrmse_train = rmsetrain
                         else:
                             regressor = LinearRegression()
                             regressor.fit(newx.reshape(-1, 1), y)
@@ -265,8 +265,8 @@ if __name__ == "__main__":
                         x = newx
                         loo = LeaveOneOut()
                         loo.get_n_splits(x)
-                        r2vstest = []
-                        r2vstrain = []
+                        rmsestest = []
+                        rmsestrain = []
                         for train_index, test_index in loo.split(x):
                             X_train, X_test = x[train_index], x[test_index]
                             y_train, y_test = y[train_index], y[test_index]
@@ -274,29 +274,28 @@ if __name__ == "__main__":
                             regressor.fit(X_train.reshape(-1, 1), y_train)
 
                             y_pred = regressor.predict(X_test.reshape(-1,1))
-                            r2v = r2_score (y_test, y_pred)
-                            r2vstest.append(r2v)
+                            rmse = np.sqrt(mse_score (y_test, y_pred))
+                            rmsestest.append(rmse)
 
                             y_pred = regressor.predict(X_train.reshape(-1,1))
-                            r2v = r2_score (y_train, y_pred)
-                            r2vstrain.append(r2v)
+                            rmse = np.sqrt(mse_score (y_train, y_pred))
+                            rmsestrain.append(rmse)   
 
-                        r2vtest = np.mean(r2vstest)
-                        r2vtrain = np.mean(r2vstrain)
+                        rmsetest = np.mean(rmsestest)
+                        rmsetrain = np.mean(rmsestrain)
 
                         regressor = LinearRegression()
                         regressor.fit(newx.reshape(-1, 1), y)
                         y_pred = regressor.predict(newx.reshape(-1,1))
                         r2v = r2_score (y, y_pred)
-                        r2v = r2vtest
                         
                         if (r2v > bestr2):                 
                             bestr2 = r2v 
                             bestformula = newf
                             best_y_pred = y_pred
                             best_regressor = regressor
-                            bestr2_test = r2vtest
-                            bestr2_train = r2vtrain
+                            bestrmse_test = rmsetest
+                            bestrmse_train = rmsetrain
                     else:
                         regressor = LinearRegression()
                         regressor.fit(newx.reshape(-1, 1), y)
@@ -320,7 +319,7 @@ if __name__ == "__main__":
         print("%10.5f "%(bestr2), bestformula)
         print('Coefficients: %15.8f Intercept: %15.8f\n'%( \
                 best_regressor.coef_[0], best_regressor.intercept_))
-        print("Test R2: ", bestr2_test, " Train R2: ", bestr2_train)
+        print("Test RMSE: ", bestrmse_test, " Train RMSE: ", bestrmse_train)
 
     else:    
         if not quiet:
