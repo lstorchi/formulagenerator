@@ -83,6 +83,7 @@ if __name__ == "__main__":
     bestformula = formula
     best_y_pred = y_pred
     best_regressor = regressor
+    bestrmse = 0.0
 
     bestrmse_test = 0.0
     bestrmse_train = 0.0
@@ -194,12 +195,14 @@ if __name__ == "__main__":
                             regressor.fit(newx.reshape(-1, 1), y)
                             y_pred = regressor.predict(newx.reshape(-1,1))
                             r2v = r2_score (y, y_pred)
+                            rmse = np.sqrt(mse_score (y, y_pred))
                             
                             if (r2v > bestr2):                 
                                 bestr2 = r2v 
                                 bestformula = newf
                                 best_y_pred = y_pred
                                 best_regressor = regressor
+                                bestrmse = rmse
                                 bestrmse_test = rmsetest
                                 bestrmse_train = rmsetrain
                         else:
@@ -288,12 +291,14 @@ if __name__ == "__main__":
                         regressor.fit(newx.reshape(-1, 1), y)
                         y_pred = regressor.predict(newx.reshape(-1,1))
                         r2v = r2_score (y, y_pred)
+                        rmse = np.sqrt(mse_score (y, y_pred))
                         
                         if (r2v > bestr2):                 
                             bestr2 = r2v 
                             bestformula = newf
                             best_y_pred = y_pred
                             best_regressor = regressor
+                            bestrmse = rmse
                             bestrmse_test = rmsetest
                             bestrmse_train = rmsetrain
                     else:
@@ -320,6 +325,7 @@ if __name__ == "__main__":
         print('Coefficients: %15.8f Intercept: %15.8f\n'%( \
                 best_regressor.coef_[0], best_regressor.intercept_))
         print("Test RMSE: ", bestrmse_test, " Train RMSE: ", bestrmse_train)
+        print("RMSE: ", bestrmse)
 
     else:    
         if not quiet:
